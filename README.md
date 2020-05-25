@@ -1,6 +1,6 @@
-## Python Tkinter Application Manager
+# Python Tkinter Application Manager
 
-# What this does
+## What this does
 
 The purpose of this application is to create an
 easy-to-use application manager for Tkinter. I plan to
@@ -10,7 +10,7 @@ used to do other things that users can create (with
 upcoming documentation on how to use this to it it's
 full extent).
 
-# Installation Info
+## Installation Info
 
 Recommended version: Python 3.8.2
 
