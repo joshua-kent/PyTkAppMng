@@ -1,5 +1,5 @@
 Modules that need to be installed:
 
-PIL (pillow)\n
-matplotlib\n
-sympy\n
+PIL (pillow)
+matplotlib
+sympy
