@@ -24,7 +24,6 @@ def init(root):
     global frame # frame refers to global frame (so other functions can access it)
 
     # set up (for after an application)
-    print("PyTk Application Manager {}".format(__version__))
     root.title("PyTk Application Manager {}".format(__version__))
     icon = os.path.join(os.path.dirname(os.path.realpath(__file__)), "icon.png")
     root.iconphoto(False, ImageTk.PhotoImage(file = icon))
