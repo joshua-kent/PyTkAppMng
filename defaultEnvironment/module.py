@@ -14,6 +14,7 @@ from PIL import Image, ImageTk
 from functools import partial
 
 global frame
+__version__ = "1.0.1 2020-05-25 18:37 BST"
 
 if not os.path.isfile(user_defaults):
     file = open(user_defaults, "w+") # if the file does not exist, it is opened (creating it)
@@ -22,7 +23,12 @@ if not os.path.isfile(user_defaults):
 def init(root):
     global frame # frame refers to global frame (so other functions can access it)
 
-    print(root.winfo_children())
+    # set up (for after an application)
+    print("PyTk Application Manager {}".format(__version__))
+    root.title("PyTk Application Manager {}".format(__version__))
+    root.geometry("800x600+20+20")
+    Grid.rowconfigure(root, 0, weight = 0)
+    Grid.columnconfigure(root, 0, weight = 0)
     for item in root.winfo_children(): # for each frame, widget etc in root
         item.destroy() # destroy it (to clear the window)
 

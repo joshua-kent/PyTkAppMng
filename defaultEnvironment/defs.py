@@ -199,7 +199,6 @@ def reset_all_defaults(root, style):
 def run_module(module, root, frame):
 
     # Checks if function will run correctly
-    print(module)
     if module not in sys.modules: # checks if the module is currently imported
         raise Exception("Module \'{}\' does not exist.".format(module)) # raises error if not
     try:
