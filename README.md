@@ -1,6 +1,6 @@
 ## Python Tkinter Application Manager
 
-# Basics
+# What this does
 
 The purpose of this application is to create an
 easy-to-use application manager for Tkinter. I plan to
