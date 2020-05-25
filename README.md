@@ -1,4 +1,5 @@
-This uses Python 3.8.2
+Recommended version: Python 3.8.2
+However, most/all versions above Python 3.0 should work.
 Modules that need to be installed:
 
 PIL/pillow: https://pypi.org/project/Pillow/2.2.2/
