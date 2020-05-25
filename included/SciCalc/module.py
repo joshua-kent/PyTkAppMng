@@ -7,5 +7,5 @@ def init(root):
     style.configure("TFrame", theme = "winnative")
     style.configure("TButton", theme = "winnative")
     frame = Frame(root)
-    btn = Button(frame, text = "hello!", style = "TButton").grid()
+    btn = Button(frame, text = "yes", style = "TButton").grid()
     frame.grid()
