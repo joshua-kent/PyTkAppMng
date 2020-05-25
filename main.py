@@ -10,7 +10,6 @@ if sys.version_info.major == 3:
 
     # Launch default environment
     defEnv.init(root)
-
     root.mainloop()
 else:
     raise Exception("Your Python version is out of date. Please update it to a newer release (3.8.2+)")
