@@ -1,5 +1,4 @@
 # Important information:
-# flametelevision423
 # If user defaults need to be imported, do so by changing setup_defaults()
 # Imported modules require __title__, __version__, __author__
 # Imported modules must be placed in useropts or included
