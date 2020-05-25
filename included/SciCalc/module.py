@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.ttk import *
+import os.path
 from io import BytesIO
 from PIL import ImageTk, Image
 from matplotlib.mathtext import math_to_image
@@ -8,6 +9,8 @@ import sympy as sp
 def init(root):
     root.title("Scientific Calculator")
     root.geometry("300x600+20+20")
+    icon = os.path.join(os.path.dirname(os.path.realpath(__file__)), "icon.png")
+    root.iconphoto(False, ImageTk.PhotoImage(file = icon))
     Grid.rowconfigure(root, 0, weight = 1) # makes sure rows take up all space (in root)
     Grid.columnconfigure(root, 0, weight = 1)
     root.resizable(False, False) # cannot resize in any dimension

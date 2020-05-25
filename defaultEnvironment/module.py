@@ -26,6 +26,8 @@ def init(root):
     # set up (for after an application)
     print("PyTk Application Manager {}".format(__version__))
     root.title("PyTk Application Manager {}".format(__version__))
+    icon = os.path.join(os.path.dirname(os.path.realpath(__file__)), "icon.png")
+    root.iconphoto(False, ImageTk.PhotoImage(file = icon))
     root.geometry("800x600+20+20")
     Grid.rowconfigure(root, 0, weight = 0)
     Grid.columnconfigure(root, 0, weight = 0)
