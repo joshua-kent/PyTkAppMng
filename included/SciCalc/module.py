@@ -19,6 +19,15 @@ def init(root):
 
     # maybe add loading screen
 
+    buttons_dict = {1: r"$|a|$", 2: r"$\sqrt{a}$", 3: r"$\log$", 4: r"$a^b$", 5: r"$($", 6: r"$)$",
+                    7: r"%", 8: r"$=$", 9: r"$\lfloor{a}\rfloor$", 10: r"$f(x)$", 11: r"$\cot$",
+                    12: r"$\tan$", 13: r"$7$", 14: r"$8$", 15: r"$9$", 16: r"$\div$",
+                    17: r"$\lceil{a}\rceil$", 18: r"$\frac{d}{dx}$", 19: r"$\sec$", 20: r"$\cos$",
+                    21: r"$4$", 22: r"$5$", 23: r"$6$", 24: r"$\times$", 25: r"$x$", 26: r"$\int$",
+                    27: r"$\csc$", 28: r"$\sin$", 29: r"$1$", 30: r"$2$", 31: r"$3$", 32: r"$-$",
+                    33: r"$y$", 34: r"$\int^a_b$", 35: r"$e$", 36: r"$\pi$", 37: r"$\frac{a}{b}$",
+                    38: r"$0$", 39: r"$.$", 40: r"$+$"}
+
     i = 1
     for y in range(5):
         Grid.rowconfigure(frame, y, weight = 1) # makes sure that this row takes up all space
@@ -26,24 +35,24 @@ def init(root):
         for x in range(8):
             Grid.columnconfigure(frame, x, weight = 1) #likewise
 
-            q = to_latex("$\\frac{{d}}{{dx}}$", 20) # turns text to LaTeX
+            q = to_latex(buttons_dict[i], 15) # turns text to LaTeX
             btn = Button(frame, image = q, compound = CENTER) # creates button
             btn.img = q # makes sure the buffer is not lost
-            btn.grid(row = y, column = x, sticky = "nsew") # sets its position in grid, sticks to south
+            btn.grid(row = y, column = x, sticky = N+S+E+W) # sets its position in grid
             i += 1
-    del i, x, y, q
-    frame.grid()
+    del i, x, y, q, buttons_dict
+    frame.grid(sticky = S)
 
-def to_latex(text, height):
+def to_latex(text, width):
     buffer = BytesIO() # creates buffer
     math_to_image(text, buffer, dpi = 1000, format = "png") # turns text into LaTeX format
     buffer.seek(0) # sets buffer pointer to 0
     pillow_image = Image.open(buffer) # opens created image
     x, y = pillow_image.size # gets x and y dimensions of image
-    aspect_ratio = x/y # aspect ratio (x/y), this needs to be maintained
+    aspect_ratio = y/x # aspect ratio (x/y), this needs to be maintained
 
-    y = height # resets y
-    x = int(y * aspect_ratio) # changes x that reserves aspect ratio (must be integer)
+    x = width # resets y
+    y = int(x * aspect_ratio) # changes x that reserves aspect ratio (must be integer)
     pillow_image = pillow_image.resize((x, y), Image.ANTIALIAS) # resizes
 
     pillow_image = pillow_image.convert("RGBA") # converts to RGBA (includes opacity)

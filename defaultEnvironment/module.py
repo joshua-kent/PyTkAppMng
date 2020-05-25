@@ -92,7 +92,7 @@ def init(root):
         # makes sure all the squares are at least size 30x30 (labels are always 1 above y, so are excluded)
         frame.grid_columnconfigure(x, minsize = 60)
         frame.grid_rowconfigure(y, minsize = 76)
-        frame.grid()
+        frame.grid(sticky = "nw")
         
         # makes sure they are in the right order (when x becomes 4, it becomes 0 and y adds one)
         x = (x + 1) % 4
