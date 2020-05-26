@@ -1,0 +1,8 @@
+{
+    "title": "Calculator",
+    "version": "prerelease2 25-05-2020 23:42 GMT",
+    "author": "Joshua Kent",
+    "default_args": {
+        "root": "root"
+    }
+}
