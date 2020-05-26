@@ -74,9 +74,13 @@ for i in range(amount_of_included_apps + amount_of_useropts_apps):
     except:
         default_args = None
     try:
-        hide = info["hide"]
+        hidden = info["hidden"]
     except:
-        hide = False
+        hidden = False
+    try:
+        icon_antialiasing = info["icon-antialiasing"]
+    except:
+        icon_antialiasing = True
 
     # checks if [directory of included]\[module]\icon.png exists
     if os.path.isfile(os.path.join(included, module, "icon.png")):
@@ -89,7 +93,8 @@ for i in range(amount_of_included_apps + amount_of_useropts_apps):
     # contains all the information
     info_dictionary = {"title": title, "version": version,
             "author": author, "directory": included_apps_dirs[i],
-            "icon": icon, 'default_args': default_args, "hide": hide}
+            "icon": icon, 'default_args': default_args, "hidden": hidden,
+            "icon-antialiasing": icon_antialiasing}
 
     # this information is then put in whichever dictionary depending on i
     if i < amount_of_included_apps:
@@ -97,15 +102,17 @@ for i in range(amount_of_included_apps + amount_of_useropts_apps):
     else:
         useropts_apps_info[module] = info_dictionary
 
-del split_dir, module, i, title, version, author, icon, default_args, hide, f
- # cleans up variables
-
 def run_module(module, root, frame):
+    if module in included_apps_info.keys():
+        location = "included"
+    elif module in useropts_apps_info.keys():
+        location = "useropts"
 
     # Checks if function will run correctly
     if module not in sys.modules: # checks if the module is currently imported
         try:
-            exec("import {}".format(module))
+            exec("import {0}.{1} as {1}".format(location, module))
+            print("yes")
         except:
             raise Exception("Could not import module \'{}\'".format(module))
     try: # first test if its in included
@@ -128,11 +135,11 @@ def run_module(module, root, frame):
         else: # if in the middle
             args_string += " {} = {},".format(key, value)
         current_iteration += 1
-    
+
     try:
         exec("{}.init({})".format(module, args_string)) # executes [module].init([args])
     except:
-        if not eval("\"init\" in dir({})".format(module)): # if [module].init() does not exist
+        if not eval("\"init\" in dir(\'{}\')".format(module)): # if [module].init() does not exist
             raise Exception("\'{}.init()\' does not exist.".format(module))
         else: # if it does, the arguments are likely to be incorrect
             raise Exception("Could not run \'{}.init({})\'. "

@@ -40,7 +40,7 @@ def init(root):
     # creates file menu
     file = Menu(menu, tearoff = 0) # creates a new menu called file
     file.add_command(label = "Import")
-    file.add_command(label = "Return to selection screen", command = lambda: init(root))
+    file.add_command(label = "Return to selection screen", command = partial(init, root))
     file.insert_separator(2) # adds a separator after second command
     file.add_command(label = "Exit", command = exit) # adds command to "File"
     menu.add_cascade(label = "File", menu = file) # Creates "File" on window
@@ -74,9 +74,13 @@ def init(root):
         directory = value["directory"]
         icon = value["icon"]
         default_args = value["default_args"]
+        icon_antialiasing = value["icon-antialiasing"]
         if icon != None: # if icon is not equal to None 
             icon = Image.open(icon)
-            icon = icon.resize((66, 66), Image.ANTIALIAS)
+            if icon_antialiasing:
+                icon = icon.resize((66, 66), Image.ANTIALIAS)
+            else:
+                icon = icon.resize((66, 66))
 
         # add buttons
         btn = Button(frame, style = "defEnv.TButton")
@@ -100,4 +104,3 @@ def init(root):
         x = (x + 1) % 4
         if x == 0:
             y += 2
-    del x, y, title, version, author, directory, default_args, icon, key, value # optimised cleanup
