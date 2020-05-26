@@ -13,7 +13,7 @@ from PIL import Image, ImageTk
 from functools import partial
 
 global frame
-__version__ = "prerelease1 2020-05-25 23:42 BST"
+__version__ = "prerelease2 2020-05-26 18:40 BST"
 
 if not os.path.isfile(user_defaults):
     file = open(user_defaults, "w+") # if the file does not exist, it is opened (creating it)
