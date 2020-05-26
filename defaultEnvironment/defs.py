@@ -103,16 +103,15 @@ for i in range(amount_of_included_apps + amount_of_useropts_apps):
         useropts_apps_info[module] = info_dictionary
 
 def run_module(module, root, frame):
-    if module in included_apps_info.keys():
+    if module in included_apps_info.keys(): # if the module is in included
         location = "included"
-    elif module in useropts_apps_info.keys():
+    elif module in useropts_apps_info.keys(): # if it is in useropts
         location = "useropts"
 
     # Checks if function will run correctly
     if module not in sys.modules: # checks if the module is currently imported
         try:
             exec("import {0}.{1} as {1}".format(location, module))
-            print("yes")
         except:
             raise Exception("Could not import module \'{}\'".format(module))
     try: # first test if its in included
