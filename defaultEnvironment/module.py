@@ -1,8 +1,9 @@
 # Important information:
 # If user defaults need to be imported, do so by changing setup_defaults()
-# Imported modules require __title__, __version__, __author__
+# Imported modules should have an info.json file that contains title, version, author anddefault arguments
 # Imported modules must be placed in useropts or included
 # If the init() function requires arguments, put the defaults in a variable "default_args" in its __init__.py
+
 
 import os.path
 import inspect
@@ -13,7 +14,7 @@ from PIL import Image, ImageTk
 from functools import partial
 
 global frame
-__version__ = "prerelease2 2020-05-26 18:40 BST"
+__version__ = "prerelease3 2020-05-26 20:42 BST"
 
 if not os.path.isfile(user_defaults):
     file = open(user_defaults, "w+") # if the file does not exist, it is opened (creating it)
@@ -32,11 +33,11 @@ def init(root):
     for item in root.winfo_children(): # for each frame, widget etc in root
         item.destroy() # destroy it (to clear the window)
 
-    # Create menubar
+    # creates menubar
     menu = Menu(root)
     root.config(menu = menu)
 
-    # Add to menubar
+    # creates file menu
     file = Menu(menu, tearoff = 0) # creates a new menu called file
     file.add_command(label = "Import")
     file.add_command(label = "Return to selection screen", command = lambda: init(root))
@@ -44,23 +45,24 @@ def init(root):
     file.add_command(label = "Exit", command = exit) # adds command to "File"
     menu.add_cascade(label = "File", menu = file) # Creates "File" on window
 
-    settings = Menu(menu, tearoff = 0) # settings
+    # creates settings menu
+    settings = Menu(menu, tearoff = 0)
     settings.add_command(label = "Change colour", command = lambda: recolour(root, style))
     settings.add_command(label = "Save current colour as default",
-                        command = lambda: edit_user_defaults("background", root.cget("background")))
+                        command = lambda: edit_settings(user_defaults, "background", root.cget("background")))
     settings.insert_separator(2)
     settings.add_command(label = "Reset all to default", command = lambda: reset_all_defaults(root, style))
     menu.add_cascade(label = "Settings", menu = settings)
 
     # ttk style
     style = Style()
-    style.configure("TFrame", theme = "winnative") # frame
-    style.configure("TButton", theme = "winnative", relief = "flat") # buttons
-    style.configure("TLabel", theme = "winnative") # labels
+    style.configure("frame.TFrame", theme = "winnative") # frame
+    style.configure("defEnv.TButton", theme = "winnative", relief = "flat") # buttons
 
     setup_defaults(root, style) # sets up all needed info and sets them accordingly
 
-    frame = Frame(root, style = "TFrame")
+    # create frame
+    frame = Frame(root, style = "frame.TFrame")
 
     # Add included apps buttons
     x = 0
@@ -77,7 +79,7 @@ def init(root):
             icon = icon.resize((66, 66), Image.ANTIALIAS)
 
         # add buttons
-        btn = Button(frame, style = "TButton")
+        btn = Button(frame, style = "defEnv.TButton")
         if icon == 'None':
             btn.img = PhotoImage()
         else:
@@ -86,7 +88,7 @@ def init(root):
                     partial(run_module, key, root, frame))
         btn.grid(padx = 2, column = x, row = y, sticky = "nswe")
         # add label below
-        lbl = Label(frame, text = title, style = "TLabel")
+        lbl = Label(frame, text = title)
         lbl.config(anchor = CENTER)
         lbl.grid(column = x, row = y + 1, pady = 2, sticky = "nswe") # ipady adds padding inside of the button, adding height
         # makes sure all the squares are at least size 30x30 (labels are always 1 above y, so are excluded)

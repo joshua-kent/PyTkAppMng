@@ -5,10 +5,6 @@ try: # when module.py is run directly, .defs does not work, so defs must be trie
 except:
     from defs import *
 import os.path
-from io import BytesIO
-from PIL import ImageTk, Image
-from matplotlib.mathtext import math_to_image
-import sympy as sp
 
 def init(root): # This will be run when its button is clicked on the main window, root is the Tk() window
     root.title("Scientific Calculator")
@@ -20,56 +16,41 @@ def init(root): # This will be run when its button is clicked on the main window
     root.resizable(False, False) # cannot resize in any dimension
 
     style = Style() # creates style sheet
-    style.configure("TFrame", theme = "winnative") # style sheet for frames, uses windows theme
-    style.configure("TButton", theme = "winnative", relief = "flat", padding = 2) # likewise for buttons
-    frame = Frame(root) # creates a frame
+    style.configure("calc_frame.TFrame", theme = "winnative") # style sheet for frames, uses windows theme
+    style.configure("calc_buttons.TButton", theme = "winnative", relief = "flat", padding = 2)
+    frame = Frame(root, style = "calc_frame.TFrame") # creates a frame
 
     # maybe add loading screen
 
+    # create white column for input:
+    input_box = Label(frame, background = "#FFFFFF")
+    input_box.grid(row = 0, column = 0, columnspan = 9, sticky = E+W) # goes from east to west
+    Grid.columnconfigure(frame, 0, weight = 1)
+    # add input text
+    input_text = Label(frame, text = "[]", background = "#FFFFFF")
+    input_text.grid(row = 0, column = 8, sticky = N+S+E) # centres text and puts it on east
+    # add separators
+    separator_1 = Separator(frame, orient = HORIZONTAL)
+    separator_1.grid(column = 0, row = 0, columnspan = 9, sticky = N+E+W) # goes from east to west, & north
+    separator_2 = Separator(frame, orient = HORIZONTAL)
+    separator_2.grid(column = 0, row = 0, columnspan = 9, sticky = S+E+W) # goes from east to west, & south
+
+    # adds buttons
     i = 1
     for y in range(5):
-        Grid.rowconfigure(frame, y, weight = 1) # makes sure that this row takes up all space
+        Grid.rowconfigure(frame, y + 1, weight = 1) # makes sure that this row takes up all space
 
         for x in range(8):
-            Grid.columnconfigure(frame, x, weight = 1) #likewise
+            Grid.columnconfigure(frame, x + 1, weight = 1) #likewise
 
-            q = to_latex(buttons_dict[i][0], 15) # turns text to LaTeX
-            btn = Button(frame, image = q, compound = CENTER) # creates button
-            btn.img = q # makes sure the buffer is not lost
-            btn.grid(row = y, column = x, sticky = N+S+E+W) # sets its position in grid
+            latex_text = to_latex(buttons_dict[i][0], 15) # turns text to LaTeX
+            # creates button
+            button = Button(frame, image = latex_text, compound = CENTER, style = "calc_buttons.TButton")
+            button.img = latex_text # makes sure the buffer is not lost
+            button.grid(row = y + 1, column = x + 1, sticky = N+S+E+W) # sets its position in grid
             i += 1
-    del i, x, y, q # clean-up
+    del i, x, y, latex_text # clean-up
     frame.grid(sticky = S)
-
-def to_latex(text, size): # converts text to LaTeX and gives it a size
-    buffer = BytesIO() # creates buffer
-    math_to_image(text, buffer, dpi = 1000, format = "png") # turns text into LaTeX format
-    buffer.seek(0) # sets buffer pointer to 0
-    pillow_image = Image.open(buffer) # opens created image
-    x, y = pillow_image.size # gets x and y dimensions of image
-    aspect_ratio = y / x # aspect ratio (x/y), this needs to be maintained
-
-    # This makes sure the proportions of the images are all similar:
-    if aspect_ratio > 1: # if y is greater than x, set y to size and adjust x to retain aspect ratio
-        y = size
-        x = int(size / aspect_ratio)
-        pillow_image = pillow_image.resize((x, y), Image.ANTIALIAS)
-    else: # if x is greater than y, set x to size and adjust y to retain aspect ratio
-        x = size
-        y = int(x * aspect_ratio)
-        pillow_image = pillow_image.resize((x, y), Image.ANTIALIAS)
-
-    pillow_image = pillow_image.convert("RGBA") # converts to RGBA (includes opacity)
-    img_data = pillow_image.getdata() # gets data in image
-    new_data = [] # creates new list to contain new data
-    for data in img_data:
-        if (255 - data[0], 255 - data[1], 255 - data[2]) < (20, 20, 20): # if the pixel near white (each colour R,G,B is less than 20 units away from 255)
-            new_data.append((255, 255, 255, 0)) # make it opaque
-        else:
-            new_data.append(data) # keep it as is
-    pillow_image.putdata(new_data) # replace pillow_image's data with new data
-
-    return ImageTk.PhotoImage(pillow_image) # returns the image in a tkinter readable format
 
 if __name__ == "__main__":
     root = Tk()

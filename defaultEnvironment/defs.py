@@ -37,16 +37,23 @@ for root_1, dirs, files in os.walk(useropts):
 amount_of_useropts_apps = len(useropts_apps_dirs)
 del root_1
 
-# Sets up included_apps_info (a dictionary containing information on each included app)
+# Sets up included_apps_info and useropts_apps_info (a dictionary containing information on each app)
 sys.path.append(included) # temporarily adds included to path (to allow import)
-for i in range(amount_of_included_apps):
-    split_dir = included_apps_dirs[i].split("\\") # splits each part of directory
-    module = split_dir[len(split_dir) - 1] # app name will be the last folder in that directory
-    info_json_directory = os.path.join(included_apps_dirs[i], "info.json") # gets info.json file
+for i in range(amount_of_included_apps + amount_of_useropts_apps):
+    # the loop will first go through included apps, then useropts
+    if i < amount_of_included_apps:
+        split_dir = included_apps_dirs[i].split("\\") # splits each part of directory
+        module = split_dir[len(split_dir) - 1] # app name will be the last folder in that directory
+        info_json_directory = os.path.join(included_apps_dirs[i], "info.json") # gets info.json file
+    else:
+        split_dir = useropts_apps_dirs[i - amount_of_included_apps].split("\\")
+        # i - am_incl_apps will let us go through useropts apps after included apps
+        module = split_dir[len(split_dir) - 1]
+        info_json_directory = os.path.join(useropts_apps_dirs[i - amount_of_included_apps], "info.json")
 
     try:
-        with open(info_json_directory, "r") as file: # tries to open the info.json file
-            info = json.load(file) # loads its contents into info
+        with open(info_json_directory, "r") as f: # tries to open the info.json file
+            info = json.load(f) # loads its contents into info
     except:
         info = {}
     try:
@@ -66,105 +73,32 @@ for i in range(amount_of_included_apps):
         default_args = info["default_args"]
     except:
         default_args = None
+    try:
+        hide = info["hide"]
+    except:
+        hide = False
 
     # checks if [directory of included]\[module]\icon.png exists
     if os.path.isfile(os.path.join(included, module, "icon.png")):
         icon = os.path.join(included, module, "icon.png") # if it does, set icon to that file
+    elif os.path.isfile(os.path.join(useropts, module, "icon.png")):
+        icon = os.path.join(useropts, module, "icon.png")
     else: # if not, set to None
         icon = None
+    
+    # contains all the information
+    info_dictionary = {"title": title, "version": version,
+            "author": author, "directory": included_apps_dirs[i],
+            "icon": icon, 'default_args': default_args, "hide": hide}
 
-    included_apps_info[module] = {'title': title, 'version': version,
-        'author': author, 'directory': included_apps_dirs[i],
-        'icon': icon, 'default_args': default_args}
-
-# Sets up useropts_apps_info (does same as above for useropts)
-sys.path.append(useropts)
-for i in range(amount_of_useropts_apps):
-    split_dir = useropts_apps_dirs[i].split("\\")
-    module = split_dir[len(split_dir) - 1]
-    info_json_directory = os.path.join(useropts_apps_dirs[i], "info.json")
-
-    if os.path.isfile(os.path.join(useropts, module, "icon.png")):
-        icon = os.path.join(included, module, "icon.png")
+    # this information is then put in whichever dictionary depending on i
+    if i < amount_of_included_apps:
+        included_apps_info[module] = info_dictionary
     else:
-        icon = None
+        useropts_apps_info[module] = info_dictionary
 
-    try:
-        with open(info_json_directory, "r+") as file:
-            info = json.load(file)
-    except:
-        info = {}
-    try:
-        title = info["title"]
-    except:
-        title = None
-    try:
-        version = info["version"]
-    except:
-        version = None
-    try:
-        author = info["author"]
-    except:
-        author = None
-    try:
-        default_args = info["default_args"]
-    except:
-        default_args = None
-
-    useropts_apps_info[module] = {'title': title, 'version': version,
-        'author': author, 'directory': useropts_apps_dirs[i],
-        'icon': icon, 'default_args': default_args}
-
-del split_dir, module, i, title, version, author, icon, default_args, file
+del split_dir, module, i, title, version, author, icon, default_args, hide, f
  # cleans up variables
-
-
-def edit_user_defaults(setting, new): # replaces a setting in user_defaults.txt with new value
-    with open(user_defaults, "r+") as file: # opens user_defaults.json
-        try:
-            contents = json.load(file) # tries to retrieve all data and put in contents
-        except json.decoder.JSONDecodeError: # if a decode error occurred, the file is probably empty
-            contents = {} # so, set contents to an empty dictionary
-        contents[setting] = new # add/edit the value of the setting key to new
-        file.seek(0) # go to the beginning of the file
-        json.dump(contents, file, indent = 4) # dump all new info into the file, indent for values is 4
-        file.truncate() # if anything else is still there, get rid of it
-
-def get_current(setting): # gets current value of setting based on its name
-    with open(user_defaults, "r+") as file:
-        try:
-            contents = json.load(file)
-        except json.decoder.JSONDecodeError:
-            return None
-        if setting in contents:
-            return contents[setting]
-        else:
-            return None
-
-
-def recolour(root, style):
-    colour = colorchooser.askcolor(title = "Choose background colour", # creates colour picker [rgb, hex]
-                        initialcolor = "SystemButtonFace") # initial colour is default system colour
-    root.config(background = colour[1]) # sets the background colour to the hex value
-    style.configure("TFrame", background = colour[1])
-    style.configure("TButton", background = colour[1]) # sets the buttons' background to that colour
-    style.configure("TLabel", background = colour[1])
-
-def setup_defaults(root, style):
-    # Setup background
-    if get_current("background") == None: # if there is no current setting for "background"
-        edit_user_defaults("background", "SystemButtonFace") # create it and set it to default
-    root.config(background = get_current("background")) # sets actual background to correct colour
-    style.configure("TButton", background = get_current("background")) # sets button backgrounds to correct
-    style.configure("TLabel", background = get_current("background"))
-    style.configure("TFrame", background = get_current("background"))
-
-def reset_all_defaults(root, style):
-    with open(user_defaults, "r+") as file:
-        file.seek(0)
-        file.truncate()
-        json.dump({}, file)
-    setup_defaults(root, style) # applies defaults
 
 def run_module(module, root, frame):
 
@@ -207,3 +141,49 @@ def run_module(module, root, frame):
     # Clean up defaultEnvironment's frame
     frame.grid_forget()
     frame.destroy()
+
+def edit_settings(file, setting, new): # replaces a setting in user_defaults.txt with new value
+    with open(file, "r+") as f: # opens file
+        try:
+            contents = json.load(f) # tries to retrieve all data and put in contents
+        except json.decoder.JSONDecodeError: # if a decode error occurred, the file is probably empty
+            contents = {} # so, set contents to an empty dictionary
+        contents[setting] = new # add/edit the value of the setting key to new
+        f.seek(0) # go to the beginning of the file
+        json.dump(contents, f, indent = 4) # dump all new info into the file, indent for values is 4
+        f.truncate() # if anything else is still there, get rid of it
+
+def get_current(file, setting): # gets current value of setting based on its name
+    with open(file, "r+") as f: # opens user_defaults.json, if it doesn't exist it is created
+        try:
+            contents = json.load(f) # tries to load its information into contents (as a dictionary)
+        except json.decoder.JSONDecodeError: # if there was a decoding error (likely due to it being empty)
+            return None
+        if setting in contents: # if the setting is in contents
+            return contents[setting]
+        else:
+            return None
+
+def setup_defaults(root, style):
+    # Setup background
+    if get_current(user_defaults, "background") == None: # if there is no current setting for "background"
+        edit_settings(user_defaults, "background", "SystemButtonFace") # create it and set it to default
+    root.config(background = get_current(user_defaults, "background")) # sets actual background to correct colour
+    style.configure("TButton", background = get_current(user_defaults, "background")) # sets button backgrounds to correct
+    style.configure("TLabel", background = get_current(user_defaults, "background"))
+    style.configure("TFrame", background = get_current(user_defaults, "background"))
+
+def reset_all_defaults(root, style):
+    with open(user_defaults, "r+") as file:
+        file.seek(0)
+        file.truncate()
+        json.dump({}, file)
+    setup_defaults(root, style) # applies defaults
+
+def recolour(root, style):
+    colour = colorchooser.askcolor(title = "Choose background colour", # creates colour picker [rgb, hex]
+                        initialcolor = "SystemButtonFace") # initial colour is default system colour
+    root.config(background = colour[1]) # sets the background colour to the hex value
+    style.configure("TFrame", background = colour[1])
+    style.configure("TButton", background = colour[1]) # sets the buttons' background to that colour
+    style.configure("TLabel", background = colour[1])
