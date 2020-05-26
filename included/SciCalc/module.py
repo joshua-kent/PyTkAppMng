@@ -6,7 +6,7 @@ from PIL import ImageTk, Image
 from matplotlib.mathtext import math_to_image
 import sympy as sp
 
-def init(root):
+def init(root): # This will be run when its button is clicked on the main window, root is the Tk() window
     root.title("Scientific Calculator")
     root.geometry("300x600+20+20")
     icon = os.path.join(os.path.dirname(os.path.realpath(__file__)), "icon.png")
@@ -43,10 +43,10 @@ def init(root):
             btn.img = q # makes sure the buffer is not lost
             btn.grid(row = y, column = x, sticky = N+S+E+W) # sets its position in grid
             i += 1
-    del i, x, y, q, buttons_dict
+    del i, x, y, q, buttons_dict # clean-up
     frame.grid(sticky = S)
 
-def to_latex(text, width):
+def to_latex(text, size):
     buffer = BytesIO() # creates buffer
     math_to_image(text, buffer, dpi = 1000, format = "png") # turns text into LaTeX format
     buffer.seek(0) # sets buffer pointer to 0
@@ -54,9 +54,15 @@ def to_latex(text, width):
     x, y = pillow_image.size # gets x and y dimensions of image
     aspect_ratio = y/x # aspect ratio (x/y), this needs to be maintained
 
-    x = width # resets y
-    y = int(x * aspect_ratio) # changes x that reserves aspect ratio (must be integer)
-    pillow_image = pillow_image.resize((x, y), Image.ANTIALIAS) # resizes
+    # This makes sure the proportions of the images are all similar:
+    if aspect_ratio > 1: # if y is greater than x, set y to size and adjust x to retain aspect ratio
+        y = size
+        x = int(size / aspect_ratio)
+        pillow_image = pillow_image.resize((x, y), Image.ANTIALIAS)
+    else: # if x is greater than y, set x to size and adjust y to retain aspect ratio
+        x = size
+        y = int(x * aspect_ratio)
+        pillow_image = pillow_image.resize((x, y), Image.ANTIALIAS)
 
     pillow_image = pillow_image.convert("RGBA") # converts to RGBA (includes opacity)
     img_data = pillow_image.getdata() # gets data in image
