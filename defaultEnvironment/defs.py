@@ -1,11 +1,12 @@
 import os.path
 import sys
+import json
 from tkinter import colorchooser
 
 current_dir = os.path.dirname(os.path.realpath(__file__)) # gets current directory of this module
 included = os.path.join(os.path.dirname(current_dir), "included")
 useropts = os.path.join(os.path.dirname(current_dir), "useropts")
-user_defaults = os.path.join(current_dir, "user_defaults.txt")
+user_defaults = os.path.join(current_dir, "user_defaults.json")
 
 included_apps_dirs = [] # create empty list of directories of included apps
 included_apps_info = {}
@@ -39,139 +40,107 @@ del root_1
 # Sets up included_apps_info (a dictionary containing information on each included app)
 sys.path.append(included) # temporarily adds included to path (to allow import)
 for i in range(amount_of_included_apps):
-    split_app = included_apps_dirs[i].split("\\") # splits each part of directory
-    app_name = split_app[len(split_app) - 1] # app name will be the last folder in that directory
+    split_dir = included_apps_dirs[i].split("\\") # splits each part of directory
+    module = split_dir[len(split_dir) - 1] # app name will be the last folder in that directory
+    info_json_directory = os.path.join(included_apps_dirs[i], "info.json") # gets info.json file
 
     try:
-        exec("import {}".format(app_name)) # imports the module
+        with open(info_json_directory, "r") as file: # tries to open the info.json file
+            info = json.load(file) # loads its contents into info
     except:
-        raise Exception("Included module \'{}\' could not be imported correctly.".format(app_name))
-
+        info = {}
     try:
-        title = eval("{}.__title__".format(app_name))[:16] # truncates after 16 letters (max length)
+        title = info["title"] # get the value of the title key
     except:
-        title = None
+        title = None #  if it doesnt exist set it to none
+    # this repeats from now on:
     try:
-        version = eval("{}.__version__".format(app_name))
+        version = info["version"]
     except:
         version = None
     try:
-        author = eval("{}.__author__".format(app_name))
+        author = info["author"]
     except:
         author = None
     try:
-        default_args = eval("{}.default_args".format(app_name))
-        temp_default_args = ""
-        k = 1
-        for key, value in default_args.items(): # turns default_args into a string of values
-            if k == 1:
-                if k == len(default_args): # there is only one item in list
-                    temp_default_args = "{} = {}".format(key, value)
-                else: # there is not only one item but currently on first iteration
-                    temp_default_args = "{} = {},".format(key, value)
-            else: # not on first iteration
-                if k == len(default_args): # on last item in list
-                    temp_default_args = "{} {} = {}".format(temp_default_args, key, value)
-                else: # not on first or last iteration in list
-                    temp_default_args = "{} {} = {},".format(temp_default_args, key, value)
-            k += 1
-        default_args = temp_default_args 
+        default_args = info["default_args"]
     except:
         default_args = None
-    if os.path.isfile(os.path.join(included, app_name, "icon.png")): # checks if included\[module]\icon.png exists
-        icon = os.path.join(included, app_name, "icon.png")
-    else:
+
+    # checks if [directory of included]\[module]\icon.png exists
+    if os.path.isfile(os.path.join(included, module, "icon.png")):
+        icon = os.path.join(included, module, "icon.png") # if it does, set icon to that file
+    else: # if not, set to None
         icon = None
 
-    included_apps_info[app_name] = {'title': str(title), 'version': str(version),
-        'author': str(author), 'directory': included_apps_dirs[i],
-        'icon': str(icon), 'default_args': str(default_args)}
+    included_apps_info[module] = {'title': title, 'version': version,
+        'author': author, 'directory': included_apps_dirs[i],
+        'icon': icon, 'default_args': default_args}
 
 # Sets up useropts_apps_info (does same as above for useropts)
 sys.path.append(useropts)
 for i in range(amount_of_useropts_apps):
-    split_app = useropts_apps_dirs[i].split("\\")
-    app_name = split_app[len(split_app) - 1]
+    split_dir = useropts_apps_dirs[i].split("\\")
+    module = split_dir[len(split_dir) - 1]
+    info_json_directory = os.path.join(useropts_apps_dirs[i], "info.json")
+
+    if os.path.isfile(os.path.join(useropts, module, "icon.png")):
+        icon = os.path.join(included, module, "icon.png")
+    else:
+        icon = None
 
     try:
-        exec("import {}".format(app_name))
+        with open(info_json_directory, "r+") as file:
+            info = json.load(file)
     except:
-        raise Exception("User module \'{}\' could not be imported correctly.".format(app_name))
-
+        raise Exception("Could not load .json file: {}".format(info_json_directory))
     try:
-        title = eval("{}.__title__".format(app_name))[:16]
+        title = info["title"]
     except:
         title = None
     try:
-        version = eval("{}.__version__".format(app_name))
+        version = info["version"]
     except:
         version = None
     try:
-        author = eval("{}.__author__".format(app_name))
+        author = info["author"]
     except:
         author = None
     try:
-        default_args = eval("{}.default_args".format(app_name))
-        temp_default_args = ""
-        k = 1
-        for key, value in default_args.items():
-            if k == 1:
-                if k == len(default_args):
-                    temp_default_args = "{} = {}".format(key, value)
-                else:
-                    temp_default_args = "{} = {},".format(key, value)
-            else:
-                if k == len(default_args):
-                    temp_default_args = "{} {} = {}".format(temp_default_args, key, value)
-                else:
-                    temp_default_args = "{} {} = {},".format(temp_default_args, key, value)
-            k += 1
-        default_args = temp_default_args
+        default_args = info["default_args"]
     except:
         default_args = None
-    if os.path.isfile(os.path.join(included, app_name, "icon.png")):
-        icon = os.path.join(included, app_name, "icon.png")
-    else:
-        icon = None
-    
-    useropts_apps_info[app_name] = {'title': str(title), 'version': str(version),
-        'author': str(author), 'directory': included_apps_dirs[i],
-        'icon': str(icon), 'default_args': str(default_args)}
 
-del split_list, split_app, app_name, i, k, title, version, author, icon, default_args, temp_default_args # cleans up variables
+    useropts_apps_info[module] = {'title': title, 'version': version,
+        'author': author, 'directory': useropts_apps_dirs[i],
+        'icon': icon, 'default_args': default_args}
+
+del split_dir, module, i, title, version, author, icon, default_args, file
+ # cleans up variables
 
 
 def edit_user_defaults(setting, new): # replaces a setting in user_defaults.txt with new value
-    changed = False
-    change_to = "{}: {}\n" # default for most settings in the middle of file
-
-    with open(user_defaults, "r+") as file: # opens user_defaults.txt
-        lines = file.readlines() # stores all its lines in "lines"
-        for i in range(len(lines)): # for each term in lines
-            if lines[i].startswith(setting):
-                if i + 1 == len(lines): # if is on the last line
-                    change_to = "{}: {}" # already a new line on previous line, not needed
-                lines[i] = change_to.format(setting, new)
-                changed = True
-        if not changed:
-            if len(lines) == 0: # if user_defaults.txt is empty
-                change_to = "{}: {}" # no \n required 
-            else:
-                change_to = "\n{}: {}" # adds a new line, so requires \n
-            lines.append(change_to.format(setting, new)) # adds the new information to lines
-        
-        file.seek(0) # sets origin to 0 (the start of the file)
-        file.truncate() # removes entire document
-        file.writelines(lines) # writes new "lines" to file
-        file.close() # closes
+    with open(user_defaults, "r+") as file: # opens user_defaults.json
+        try:
+            contents = json.load(file) # tries to retrieve all data and put in contents
+        except json.decoder.JSONDecodeError: # if a decode error occurred, the file is probably empty
+            contents = {} # so, set contents to an empty dictionary
+        contents[setting] = new # add/edit the value of the setting key to new
+        file.seek(0) # go to the beginning of the file
+        json.dump(contents, file, indent = 4) # dump all new info into the file, indent for values is 4
+        file.truncate() # if anything else is still there, get rid of it
 
 def get_current(setting): # gets current value of setting based on its name
-    with open(user_defaults, "r") as file:
-        lines = file.readlines() # adds all lines in user_defaults to "lines"
-        for item in lines:
-            if item.startswith(setting):
-                return item.split()[1] # the line is split into a list, then its value is gotten
-    return None # if this does not terminate (the setting does not exist), return None
+    with open(user_defaults, "r+") as file:
+        try:
+            contents = json.load(file)
+        except json.decoder.JSONDecodeError:
+            return None
+        if setting in contents:
+            return contents[setting]
+        else:
+            return None
+
 
 def recolour(root, style):
     colour = colorchooser.askcolor(title = "Choose background colour", # creates colour picker [rgb, hex]
@@ -191,20 +160,25 @@ def setup_defaults(root, style):
     style.configure("TFrame", background = get_current("background"))
 
 def reset_all_defaults(root, style):
-    os.remove(user_defaults) # removes current user_defaults file
-    file = open(user_defaults, "w+") # recreates the file
-    file.close() # closes the opened file
+    with open(user_defaults, "r+") as file:
+        file.seek(0)
+        file.truncate()
+        json.dump({}, file)
     setup_defaults(root, style) # applies defaults
 
 def run_module(module, root, frame):
 
     # Checks if function will run correctly
     if module not in sys.modules: # checks if the module is currently imported
-        raise Exception("Module \'{}\' does not exist.".format(module)) # raises error if not
-    try:
-        default_args = eval("{}.default_args".format(module)) # checks if default_args exists
-    except:
-        default_args = {} # sets default_args to empty if it does not exist
+        try:
+            exec("import {}".format(module))
+        except:
+            raise Exception("Could not import module \'{}\'".format(module))
+    try: # first test if its in included
+        default_args = included_apps_info[module]["default_args"]
+    except: # next test if its in useropts
+        default_args = useropts_apps_info[module]["default_args"]
+    # one of these should succeed as if default_args does not exist in the .json, it equals None
 
 
     args_string = ""
@@ -220,7 +194,7 @@ def run_module(module, root, frame):
         else: # if in the middle
             args_string += " {} = {},".format(key, value)
         current_iteration += 1
-
+    
     try:
         exec("{}.init({})".format(module, args_string)) # executes [module].init([args])
     except:

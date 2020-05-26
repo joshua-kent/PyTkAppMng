@@ -72,7 +72,7 @@ def init(root):
         directory = value["directory"]
         icon = value["icon"]
         default_args = value["default_args"]
-        if not icon == "None": 
+        if icon != None: # if icon is not equal to None 
             icon = Image.open(icon)
             icon = icon.resize((66, 66), Image.ANTIALIAS)
 
@@ -99,4 +99,3 @@ def init(root):
         if x == 0:
             y += 2
     del x, y, title, version, author, directory, default_args, icon, key, value # optimised cleanup
-    
