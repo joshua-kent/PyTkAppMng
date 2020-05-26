@@ -10,13 +10,13 @@ used to do other things that users can create (with
 upcoming documentation on how to use this to it it's
 full extent).
 
-## Installation Info
+## Installation info
 
 Recommended version: Python 3.8.2
 
 However, most/all versions above Python 3.0 should work.
 
-## Package that need to be installed:
+## Required packages
 
 For full information on how to install, click the headings to
 redirect you to the official installation guide for each package.
