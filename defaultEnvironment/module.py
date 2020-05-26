@@ -98,4 +98,5 @@ def init(root):
         x = (x + 1) % 4
         if x == 0:
             y += 2
-    del x, y, title, version, author, directory, default_args, icon, key, value
+    del x, y, title, version, author, directory, default_args, icon, key, value # optimised cleanup
+    
