@@ -16,10 +16,20 @@ Recommended version: Python 3.8.2
 
 However, most/all versions above Python 3.0 should work.
 
-Modules that need to be installed:
+## Modules that need to be installed:
 
-PIL/Pillow: https://pypi.org/project/Pillow/2.2.2/
+### Pillow/PIL
 
-Matplotlib: https://matplotlib.org/3.1.1/users/installing.html
+Installation: https://pypi.org/project/Pillow/2.2.2/
 
-sympy: https://docs.sympy.org/latest/install.html
+```bash
+pip install pillow
+```
+
+### Matplotlib
+
+Installation: https://matplotlib.org/3.1.1/users/installing.html
+
+### Sympy
+
+Sympy: https://docs.sympy.org/latest/install.html
