@@ -14,7 +14,7 @@ from PIL import Image, ImageTk
 from functools import partial
 
 global frame
-__version__ = "prerelease3 2020-05-26 20:42 BST"
+__version__ = "prerelease4 2020-05-26 23:32 BST"
 
 if not os.path.isfile(user_defaults):
     file = open(user_defaults, "w+") # if the file does not exist, it is opened (creating it)
@@ -47,7 +47,8 @@ def init(root):
 
     # creates settings menu
     settings = Menu(menu, tearoff = 0)
-    settings.add_command(label = "Change colour", command = lambda: recolour(root, style))
+    settings.add_command(label = "Change background colour", command = lambda: recolour(root, style))
+    settings.add_command(label = "Change accent colour") # need to add command, issue 7
     settings.add_command(label = "Save current colour as default",
                         command = lambda: edit_settings(user_defaults, "background", root.cget("background")))
     settings.insert_separator(2)
