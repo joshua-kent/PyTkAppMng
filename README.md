@@ -20,16 +20,33 @@ However, most/all versions above Python 3.0 should work.
 
 ### Pillow/PIL
 
-Installation: https://pypi.org/project/Pillow/2.2.2/
+[Pillow installation]https://pillow.readthedocs.io/en/stable/installation.html
 
 ```bash
-pip install pillow
+python -m pip install Pillow
 ```
 
 ### Matplotlib
 
-Installation: https://matplotlib.org/3.1.1/users/installing.html
+[Matplotlib installation]https://matplotlib.org/3.1.1/users/installing.html
+
+```bash
+python -m pip install -U matplotlib
+```
 
 ### Sympy
 
-Installation: https://docs.sympy.org/latest/install.html
+[Sympy installation]https://docs.sympy.org/latest/install.html
+
+#### Using Anaconda
+
+```bash
+conda install -c anaconda sympy
+```
+
+#### Using pip
+
+```bash
+pip install mpmath
+pip install sympy
+```
