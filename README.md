@@ -32,4 +32,4 @@ Installation: https://matplotlib.org/3.1.1/users/installing.html
 
 ### Sympy
 
-Sympy: https://docs.sympy.org/latest/install.html
+Installation: https://docs.sympy.org/latest/install.html
