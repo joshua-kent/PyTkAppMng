@@ -93,7 +93,7 @@ for i in range(amount_of_useropts_apps):
         with open(info_json_directory, "r+") as file:
             info = json.load(file)
     except:
-        raise Exception("Could not load .json file: {}".format(info_json_directory))
+        info = {}
     try:
         title = info["title"]
     except:
