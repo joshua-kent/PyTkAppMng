@@ -5,6 +5,6 @@
     "default_args": {
         "root": "root"
     },
-    "hidden": false,
+    "hidden": true,
     "icon-antialiasing": false
 }

@@ -177,32 +177,34 @@ class init:
             icon = value["icon"]
             default_args = value["default_args"]
             icon_antialiasing = value["icon-antialiasing"]
-            if icon != None:
-                icon = Image.open(icon)
-                if icon_antialiasing:
-                    icon = icon.resize((66, 66), Image.ANTIALIAS)
+            hidden = value["hidden"]
+            if not hidden:
+                if icon != None:
+                    icon = Image.open(icon)
+                    if icon_antialiasing:
+                        icon = icon.resize((66, 66), Image.ANTIALIAS)
+                    else:
+                        icon = icon.resize((66, 66))
+
+                # add buttons
+                btn = Button(self.frame, style = "defEnv.TButton")
+                if icon == "None":
+                    btn.img = PhotoImage() 
                 else:
-                    icon = icon.resize((66, 66))
+                    btn.img = ImageTk.PhotoImage(icon)
+                btn.config(image = btn.img, compound = CENTER,
+                command = partial(self.run_module, key, self.root, self.frame))
+                btn.grid(padx = 2, column = x, row = y, sticky = N+S+W+E)
 
-            # add buttons
-            btn = Button(self.frame, style = "defEnv.TButton")
-            if icon == "None":
-                btn.img = PhotoImage() 
-            else:
-                btn.img = ImageTk.PhotoImage(icon)
-            btn.config(image = btn.img, compound = CENTER,
-            command = partial(self.run_module, key, self.root, self.frame))
-            btn.grid(padx = 2, column = x, row = y, sticky = N+S+W+E)
+                # add label below
+                lbl = Label(self.frame, text = title)
+                lbl.config(anchor = CENTER)
+                lbl.grid(column = x, row = y + 1, padx = 2, sticky = N+S+W+E)
 
-            # add label below
-            lbl = Label(self.frame, text = title)
-            lbl.config(anchor = CENTER)
-            lbl.grid(column = x, row = y + 1, padx = 2, sticky = N+S+W+E)
-
-            # makes sure they are in the right order
-            x = (x + 1) % 4
-            if x == 0:
-                y += 2
+                # makes sure they are in the right order
+                x = (x + 1) % 4
+                if x == 0:
+                    y += 2
         
     def run_module(self, module, root, frame):
         for i in self.root.winfo_children():
