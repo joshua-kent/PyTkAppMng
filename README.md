@@ -16,7 +16,7 @@ Recommended version: Python 3.8.2
 
 However, most/all versions above Python 3.0 should work.
 
-## Required dependencies
+### Required dependencies
 
 [Pillow/PIL](https://pillow.readthedocs.io/en/stable/installation.html)
 
