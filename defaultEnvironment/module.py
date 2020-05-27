@@ -146,8 +146,7 @@ class init:
 
         # creates settings menu
         settings = Menu(self.menu, tearoff = 0)
-        settings.add_command(label = "Change background colour", command = lambda: self.recolour(root, self.style))
-        settings.add_command(label = "Change accent colour")
+        settings.add_command(label = "Change background colour", command = lambda: self.recolour_background(root, self.style))
         settings.add_command(label = "Save current colour as default",
                                 command = lambda: self.edit_settings(self.user_defaults, "background", self.root.cget("background")))
         settings.insert_separator(2)
@@ -290,7 +289,7 @@ class init:
             json.dump({}, f)
         self.setup_defaults(root, style)
     
-    def recolour(self, root, style):
+    def recolour_background(self, root, style):
         colour = colorchooser.askcolor(title = "Choose background colour",
         initialcolor = "SystemButtonFace")
         root.config(background = colour[1])
