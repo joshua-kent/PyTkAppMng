@@ -85,7 +85,7 @@ class init:
             except:
                 author = None
             try:
-                default_args = info["default_args"]
+                default_args = info["default-args"]
             except:
                 default_args = None
             try:
@@ -106,7 +106,7 @@ class init:
             
             info_dictionary = {"title": title, "version": version,
                 "author": author, "directory": self.included_apps_dirs[i],
-                "icon": icon, 'default_args': default_args, "hidden": hidden,
+                "icon": icon, 'default-args': default_args, "hidden": hidden,
                 "icon-antialiasing": icon_antialiasing}
             
             if i < self.amount_of_included_apps:
@@ -174,7 +174,7 @@ class init:
             author = value["author"]
             directory = value["directory"]
             icon = value["icon"]
-            default_args = value["default_args"]
+            default_args = value["default-args"]
             icon_antialiasing = value["icon-antialiasing"]
             hidden = value["hidden"]
             if not hidden:
@@ -224,9 +224,9 @@ class init:
             except:
                 raise Exception("Could not import module \'{}\'".format(module))
         try:
-            default_args = self.included_apps_info[module]["default_args"]
+            default_args = self.included_apps_info[module]["default-args"]
         except:
-            default_args = self.added_apps_info[module]["default_args"]
+            default_args = self.added_apps_info[module]["default-args"]
         
         args_string = ""
         i = 1
@@ -252,7 +252,7 @@ class init:
                 "Its default arguments may be incorrect".format(module, args_string))
 
     def edit_settings(self, file, setting, new):
-        with open(file, "r+") as f:
+        with open(file, "w+") as f:
             try:
                 contents = json.load(f)
             except json.decoder.JSONDecodeError:
@@ -263,7 +263,7 @@ class init:
             f.truncate()
 
     def get_current(self, file, setting):
-        with open(file, "r+") as f:
+        with open(file, "w+") as f:
             try:
                 contents = json.load(f)
             except json.decoder.JSONDecodeError:
@@ -283,7 +283,7 @@ class init:
 
 
     def reset_all_defaults(self, root, style):
-        with open(self.user_defaults, "r+") as f:
+        with open(self.user_defaults, "w+") as f:
             f.seek(0)
             f.truncate()
             json.dump({}, f)

@@ -24,8 +24,6 @@ class init:
         style.configure("calc_buttons.TButton", theme = "winnative", relief = "flat")
         self.frame = Frame(self.root, style = "calc_frame.TFrame")
 
-        txt = ""
-
         input_box = Label(self.frame, background = "#FFFFFF")
         input_box.grid(row = 0, column = 0, columnspan = 9, sticky = E+W)
         Grid.columnconfigure(self.frame, 0, weight = 1)

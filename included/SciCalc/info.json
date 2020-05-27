@@ -2,7 +2,7 @@
     "title": "Calculator",
     "version": "prerelease2.5 27-05-2020 23:10 GMT",
     "author": "Joshua Kent",
-    "default_args": {
+    "default-args": {
         "root": "root"
     },
     "hidden": false,
