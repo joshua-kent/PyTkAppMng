@@ -7,6 +7,8 @@ except:
 import os.path
 
 class init:
+    current_string = ""
+
     def __init__(self, root):
         self.root = root
         self.root.title("Scientific Calculator")
@@ -22,13 +24,13 @@ class init:
         style.configure("calc_buttons.TButton", theme = "winnative", relief = "flat")
         self.frame = Frame(self.root, style = "calc_frame.TFrame")
 
-        # maybe add loading screen
+        txt = ""
 
         input_box = Label(self.frame, background = "#FFFFFF")
         input_box.grid(row = 0, column = 0, columnspan = 9, sticky = E+W)
         Grid.columnconfigure(self.frame, 0, weight = 1)
-        input_text = Label(self.frame, text = "in place", background = "#FFFFFF")
-        input_text.grid(row = 0, column = 8, sticky = N+S+E)
+        self.input_text = Label(self.frame, text = "", background = "#FFFFFF", anchor = E)
+        self.input_text.grid(row = 0, column = 0, columnspan = 9, sticky = N+S+E+W)
         separator_1 = Separator(self.frame, orient = HORIZONTAL)
         separator_1.grid(column = 0, row = 0, columnspan = 9, sticky = N+E+W)
         separator_2 = Separator(self.frame, orient = HORIZONTAL)
@@ -41,11 +43,16 @@ class init:
                 Grid.columnconfigure(self.frame, x + 1, weight = 1)
 
                 latex_text = to_latex(buttons_dict[i][0], 15)
-                button = Button(self.frame, image = latex_text, compound = CENTER)
+                button = Button(self.frame, image = latex_text, compound = CENTER,
+                command = lambda i=i: self.button_clicked(buttons_dict[i][1]))
                 button.img = latex_text
                 button.grid(row = y + 1, column = x + 1, sticky = N+S+E+W)
                 i += 1
         self.frame.grid(sticky = S)
+
+    def button_clicked(self, button_text):
+        self.input_text["text"] += button_text # need to add to this
+
 
 if __name__ == "__main__":
     root = Tk()
