@@ -16,34 +16,8 @@ Recommended version: Python 3.8.2
 
 However, most/all versions above Python 3.0 should work.
 
-## Required packages
+## Required dependencies
 
-For full information on how to install, click the headings to
-redirect you to the official installation guide for each package.
-
-### [Pillow/PIL](https://pillow.readthedocs.io/en/stable/installation.html)
-
-```bash
-python -m pip install Pillow
-```
-
-### [Matplotlib](https://matplotlib.org/3.1.1/users/installing.html)
-
-```bash
-python -m pip install -U matplotlib
-```
-
-### [Sympy](https://docs.sympy.org/latest/install.html)
-
-#### Using Anaconda
-
-```bash
-conda install -c anaconda sympy
-```
-
-#### Using pip
-
-```bash
-pip install mpmath
-pip install sympy
-```
+[Pillow/PIL](https://pillow.readthedocs.io/en/stable/installation.html)
+[Matplotlib](https://matplotlib.org/3.1.1/users/installing.html)
+[Sympy](https://docs.sympy.org/latest/install.html)
