@@ -19,5 +19,7 @@ However, most/all versions above Python 3.0 should work.
 ## Required dependencies
 
 [Pillow/PIL](https://pillow.readthedocs.io/en/stable/installation.html)
+
 [Matplotlib](https://matplotlib.org/3.1.1/users/installing.html)
+
 [Sympy](https://docs.sympy.org/latest/install.html)
