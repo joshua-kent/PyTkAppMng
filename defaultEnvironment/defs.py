@@ -103,6 +103,14 @@ for i in range(amount_of_included_apps + amount_of_useropts_apps):
         useropts_apps_info[module] = info_dictionary
 
 def run_module(module, root, frame):
+    # Clean up defaultEnvironment's frame
+    for i in root.winfo_children(): # NEED TO TEST THIS OUT MORE, MENU DOES NOT STAY
+        if i.winfo_children():
+            for k in i.winfo_children():
+                k.destroy()
+        i.destroy()
+    root.deiconify()
+
     if module in included_apps_info.keys(): # if the module is in included
         location = "included"
     elif module in useropts_apps_info.keys(): # if it is in useropts
@@ -143,10 +151,6 @@ def run_module(module, root, frame):
         else: # if it does, the arguments are likely to be incorrect
             raise Exception("Could not run \'{}.init({})\'. "
             "Its default arguments may be incorrect".format(module, args_string))
-    
-    # Clean up defaultEnvironment's frame
-    frame.grid_forget()
-    frame.destroy()
 
 def edit_settings(file, setting, new): # replaces a setting in user_defaults.txt with new value
     with open(file, "r+") as f: # opens file

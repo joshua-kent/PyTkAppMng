@@ -22,12 +22,13 @@ if not os.path.isfile(user_defaults):
 
 def init(root):
     global frame # frame refers to global frame (so other functions can access it)
-
     # set up (for after an application)
     root.title("PyTk Application Manager {}".format(__version__))
     icon = os.path.join(os.path.dirname(os.path.realpath(__file__)), "icon.png")
     root.iconphoto(False, ImageTk.PhotoImage(file = icon))
     root.geometry("800x600+20+20")
+    root.resizable(True, True)
+    root.deiconify()
     Grid.rowconfigure(root, 0, weight = 0)
     Grid.columnconfigure(root, 0, weight = 0)
     for item in root.winfo_children(): # for each frame, widget etc in root
@@ -64,6 +65,15 @@ def init(root):
 
     # create frame
     frame = Frame(root, style = "frame.TFrame")
+    frame.grid_forget()
+
+    separator = Separator(frame, orient = VERTICAL)
+    separator.grid(row = 0, column = 4, rowspan = 32, sticky = N+S+W)
+
+    for i in range(32):
+        frame.grid_columnconfigure(i, minsize = 60)
+        frame.grid_rowconfigure(2*i, minsize = 76) # only even rows are configured
+    frame.grid()
 
     # Add included apps buttons
     x = 0
@@ -97,9 +107,6 @@ def init(root):
         lbl.config(anchor = CENTER)
         lbl.grid(column = x, row = y + 1, pady = 2, sticky = "nswe") # ipady adds padding inside of the button, adding height
         # makes sure all the squares are at least size 30x30 (labels are always 1 above y, so are excluded)
-        frame.grid_columnconfigure(x, minsize = 60)
-        frame.grid_rowconfigure(y, minsize = 76)
-        frame.grid(sticky = "nw")
         
         # makes sure they are in the right order (when x becomes 4, it becomes 0 and y adds one)
         x = (x + 1) % 4
