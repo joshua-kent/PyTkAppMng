@@ -1,4 +1,5 @@
 import json
+import os
 
 class typemathtextError(Exception):
     pass
@@ -7,9 +8,11 @@ class text:
     latex_text = ""
     parsed_latex_text = []
     pointer = 0
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    parse_info_dir = os.path.join(current_dir, "parse_info.json")
 
     def __init__(self):
-        self.parse_latex("\int4x+\int2dx-3dx+\int4+\int2dxdx")
+        self.parse_latex(r"\int4x+\int2dx-3dx+\int4+\int2dxdx")
 
     def edit(self, text, moveby = 1, moveto = None):
         if moveby == moveto == None or None not in [moveby, moveto]:
@@ -37,7 +40,7 @@ class text:
         output = []
         for char in text:
             output.append(char)
-        with open("parse_info.json", "r") as f:
+        with open(self.parse_info_dir, "r") as f:
             keywords = json.load(f)["keywords"]
         for word in keywords:
             self.concatenate_chars(output, word)
