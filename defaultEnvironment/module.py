@@ -21,14 +21,15 @@ from tkinter.ttk import *
 from PIL import Image, ImageTk
 from functools import partial
 
-__version__ = "prerelease2.6b1 2020-05-28 17:40 BST"
+__version__ = "prerelease2.6b2 2020-05-28 17:50 BST"
 
 class init:
     current_dir = os.path.dirname(os.path.realpath(__file__))
     env_icon = os.path.join(current_dir, "icon.png")
     pytkappmng_dir = os.path.dirname(current_dir)
-    included = os.path.join(pytkappmng_dir, "included")
-    added = os.path.join(pytkappmng_dir, "added")
+    applications_dir = os.path.join(pytkappmng_dir, "applications")
+    included = os.path.join(applications_dir, "included")
+    added = os.path.join(applications_dir, "added")
     user_settings = os.path.join(current_dir, "user_settings.json")
     
     included_apps_dirs = []
@@ -214,9 +215,9 @@ class init:
         self.root.deiconify()
 
         if module in self.included_apps_info.keys():
-            location = "included"
+            location = "applications.included"
         elif module in self.added_apps_info.keys():
-            location = "added"
+            location = "applications.added"
         
         if module not in sys.modules:
             exec("import {0}.{1} as {1}".format(location, module))
