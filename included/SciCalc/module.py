@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.ttk import *
+import warnings
 try:
     from .defs import *
 except:
@@ -55,4 +56,6 @@ class init:
 if __name__ == "__main__":
     root = Tk()
     init(root)
+    new = typemathtext()
+    new.edit("hi", 3, 4)
     root.mainloop()

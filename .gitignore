@@ -1,2 +1,3 @@
 __pycache__/
-user_defaults.json
+.vscode/
+user_settings.json

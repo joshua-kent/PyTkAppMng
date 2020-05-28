@@ -1,2 +1,3 @@
 from .module import *
-default_args = {}
+
+__all__ = ["init"]

@@ -1,7 +1,7 @@
 from io import BytesIO
 from PIL import ImageTk, Image
 from matplotlib.mathtext import math_to_image
-#import sympy as sp
+import warnings
 
 buttons_dict = {1: [r"$|a|$", "abs"], 2: [r"$\sqrt{a}$", "sqrt"], 3: [r"$\log$", "log"],
                     4: [r"$\ln$", "ln"], 5: [r"$a^b$", "power"], 6: [r"$()$", "brackets"],
@@ -17,6 +17,17 @@ buttons_dict = {1: [r"$|a|$", "abs"], 2: [r"$\sqrt{a}$", "sqrt"], 3: [r"$\log$",
                     36: [r"$\pi$", "pi"], 37: [r"$\frac{a}{b}$", "fraction"], 38: [r"$0$", "0"],
                     39: [r"$.$", "decimal_point"], 40: [r"$+$", "plus"]}
                     # these are the buttons in LaTeX maths mode format
+
+class typemathtext:
+    text = ""
+    pointer = 0
+
+    class typemathtextError(Exception):
+        pass
+
+    def edit(self, text, moveby = 1, moveto = None):
+        if (moveby == moveto == None) or (None not in [moveby, moveto]):
+            raise typemathtext.typemathtextError("moveby and moveto cannot be set simultaneously")
 
 def to_latex(text, size): # converts text to LaTeX and gives it a size
     buffer = BytesIO() # creates buffer

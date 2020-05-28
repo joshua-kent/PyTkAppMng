@@ -21,7 +21,7 @@ from tkinter.ttk import *
 from PIL import Image, ImageTk
 from functools import partial
 
-__version__ = "prerelease2.5.3 2020-05-27 23:33 BST"
+__version__ = "prerelease2.6b1 2020-05-28 17:40 BST"
 
 class init:
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -29,7 +29,7 @@ class init:
     pytkappmng_dir = os.path.dirname(current_dir)
     included = os.path.join(pytkappmng_dir, "included")
     added = os.path.join(pytkappmng_dir, "added")
-    user_defaults = os.path.join(current_dir, "user_defaults.json")
+    user_settings = os.path.join(current_dir, "user_settings.json")
     
     included_apps_dirs = []
     included_apps_info = {}
@@ -148,7 +148,7 @@ class init:
         settings = Menu(self.menu, tearoff = 0)
         settings.add_command(label = "Change background colour", command = lambda: self.recolour_background(root, self.style))
         settings.add_command(label = "Save current colour as default",
-                                command = lambda: self.edit_settings(self.user_defaults, "background", self.root.cget("background")))
+                                command = lambda: self.edit_settings(self.user_settings, "background", self.root.cget("background")))
         settings.insert_separator(2)
         settings.add_command(label = "Reset all to default", command = lambda: self.reset_all_defaults(self.root, self.style))
         self.menu.add_cascade(label = "Settings", menu = settings)
@@ -219,10 +219,7 @@ class init:
             location = "added"
         
         if module not in sys.modules:
-            try:
-                exec("import {0}.{1} as {1}".format(location, module))
-            except:
-                raise Exception("Could not import module \'{}\'".format(module))
+            exec("import {0}.{1} as {1}".format(location, module))
         try:
             default_args = self.included_apps_info[module]["default-args"]
         except:
@@ -274,16 +271,16 @@ class init:
                 return None
 
     def setup_defaults(self, root, style):
-        if self.get_current(self.user_defaults, "background") == None:
-            self.edit_settings(self.user_defaults, "background", "SystemButtonFace")
-        root.config(background = self.get_current(self.user_defaults, "background"))
-        style.configure("TButton", background = self.get_current(self.user_defaults, "background"))
-        style.configure("TLabel", background = self.get_current(self.user_defaults, "background"))
-        style.configure("TFrame", background = self.get_current(self.user_defaults, "background"))
+        if self.get_current(self.user_settings, "background") == None:
+            self.edit_settings(self.user_settings, "background", "SystemButtonFace")
+        root.config(background = self.get_current(self.user_settings, "background"))
+        style.configure("TButton", background = self.get_current(self.user_settings, "background"))
+        style.configure("TLabel", background = self.get_current(self.user_settings, "background"))
+        style.configure("TFrame", background = self.get_current(self.user_settings, "background"))
 
 
     def reset_all_defaults(self, root, style):
-        with open(self.user_defaults, "w+") as f:
+        with open(self.user_settings, "w+") as f:
             f.seek(0)
             f.truncate()
             json.dump({}, f)
