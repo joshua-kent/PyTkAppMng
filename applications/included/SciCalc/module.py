@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
+from PIL import ImageTk, Image
+import packages.typemathtext as typemathtext
 import warnings
 try:
     from .defs import *
@@ -41,7 +43,7 @@ class init:
             for x in range(8):
                 Grid.columnconfigure(self.frame, x + 1, weight = 1)
 
-                latex_text = to_latex(buttons_dict[i][0], 15)
+                latex_text = typemathtext.to_latex(buttons_dict[i][0], 15)
                 button = Button(self.frame, image = latex_text, compound = CENTER,
                 command = lambda i=i: self.button_clicked(buttons_dict[i][1]))
                 button.img = latex_text
@@ -56,6 +58,6 @@ class init:
 if __name__ == "__main__":
     root = Tk()
     init(root)
-    new = typemathtext()
+    new = typemathtext.text()
     new.edit("hi", 3, 4)
     root.mainloop()
