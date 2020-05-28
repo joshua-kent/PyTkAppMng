@@ -1,0 +1,3 @@
+# ensures /added is not ignored as it is an empty file
+*
+!.gitignore
