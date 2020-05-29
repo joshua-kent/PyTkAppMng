@@ -250,7 +250,7 @@ class init:
                 "Its default arguments may be incorrect".format(module, args_string))
 
     @staticmethod
-    def edit_settings(file, setting, new):
+    def edit_settings(file, setting, new): # change to set_setting
         with open(file, "w+") as f:
             try:
                 contents = json.load(f)
