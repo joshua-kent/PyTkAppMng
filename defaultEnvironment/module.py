@@ -149,7 +149,7 @@ class init:
         settings = Menu(self.menu, tearoff = 0)
         settings.add_command(label = "Change background colour", command = lambda: self.recolour_background(root, self.style))
         settings.add_command(label = "Save current colour as default",
-                                command = lambda: self.edit_settings(self.user_settings, "background", self.root.cget("background")))
+                                command = lambda: self.set_setting(self.user_settings, "background", self.root.cget("background")))
         settings.insert_separator(2)
         settings.add_command(label = "Reset all to default", command = lambda: self.reset_all_defaults(self.root, self.style))
         self.menu.add_cascade(label = "Settings", menu = settings)
@@ -249,8 +249,9 @@ class init:
                 raise Exception("Could not run \'{}.init({})\'."
                 "Its default arguments may be incorrect".format(module, args_string))
 
-    @staticmethod
-    def edit_settings(file, setting, new): # change to set_setting
+    def set_setting(self, file, setting, new):
+        """
+        """
         with open(file, "w+") as f:
             try:
                 contents = json.load(f)
@@ -261,9 +262,8 @@ class init:
             json.dump(contents, f, indent = 4)
             f.truncate()
 
-    @staticmethod
-    def get_current(file, setting): # change to get_setting
-        with open(file, "w+") as f:
+    def get_setting(self, file, setting):
+        with open(file, "r+") as f:
             try:
                 contents = json.load(f)
             except json.decoder.JSONDecodeError:
@@ -273,25 +273,22 @@ class init:
             else:
                 return None
 
-    @classmethod
-    def setup_defaults(cls, root, style):
-        if self.get_current(cls.user_settings, "background") == None:
-            self.edit_settings(cls.user_settings, "background", "SystemButtonFace")
-        root.config(background = cls.get_current(cls.user_settings, "background"))
-        style.configure("TButton", background = cls.get_current(cls.user_settings, "background"))
-        style.configure("TLabel", background = cls.get_current(cls.user_settings, "background"))
-        style.configure("TFrame", background = cls.get_current(cls.user_settings, "background"))
+    def setup_defaults(self, root, style):
+        if self.get_setting(self.user_settings, "background") == None:
+            self.set_setting(self.user_settings, "background", "SystemButtonFace")
+        root.config(background = self.get_setting(self.user_settings, "background"))
+        style.configure("TButton", background = self.get_setting(self.user_settings, "background"))
+        style.configure("TLabel", background = self.get_setting(self.user_settings, "background"))
+        style.configure("TFrame", background = self.get_setting(self.user_settings, "background"))
 
-    @classmethod
-    def reset_all_defaults(cls, root, style):
+    def reset_all_defaults(self, root, style):
         with open(self.user_settings, "w+") as f:
             f.seek(0)
             f.truncate()
             json.dump({}, f)
-        cls.setup_defaults(root, style)
+        self.setup_defaults(root, style)
     
-    @staticmethod
-    def recolour_background(root, style):
+    def recolour_background(self, root, style):
         colour = colorchooser.askcolor(title = "Choose background colour",
         initialcolor = "SystemButtonFace")
         root.config(background = colour[1])
