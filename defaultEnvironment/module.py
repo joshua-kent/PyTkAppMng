@@ -21,7 +21,7 @@ from tkinter.ttk import *
 from PIL import Image, ImageTk
 from functools import partial
 
-__version__ = "prerelease2.6b2 2020-05-28 17:50 BST"
+__version__ = "prerelease2.6b3 2020-05-29 02:32 BST"
 
 class init:
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -249,7 +249,8 @@ class init:
                 raise Exception("Could not run \'{}.init({})\'."
                 "Its default arguments may be incorrect".format(module, args_string))
 
-    def edit_settings(self, file, setting, new):
+    @staticmethod
+    def edit_settings(file, setting, new):
         with open(file, "w+") as f:
             try:
                 contents = json.load(f)
@@ -260,7 +261,8 @@ class init:
             json.dump(contents, f, indent = 4)
             f.truncate()
 
-    def get_current(self, file, setting):
+    @staticmethod
+    def get_current(file, setting): # change to get_setting
         with open(file, "w+") as f:
             try:
                 contents = json.load(f)
@@ -271,23 +273,25 @@ class init:
             else:
                 return None
 
-    def setup_defaults(self, root, style):
-        if self.get_current(self.user_settings, "background") == None:
-            self.edit_settings(self.user_settings, "background", "SystemButtonFace")
-        root.config(background = self.get_current(self.user_settings, "background"))
-        style.configure("TButton", background = self.get_current(self.user_settings, "background"))
-        style.configure("TLabel", background = self.get_current(self.user_settings, "background"))
-        style.configure("TFrame", background = self.get_current(self.user_settings, "background"))
+    @classmethod
+    def setup_defaults(cls, root, style):
+        if self.get_current(cls.user_settings, "background") == None:
+            self.edit_settings(cls.user_settings, "background", "SystemButtonFace")
+        root.config(background = cls.get_current(cls.user_settings, "background"))
+        style.configure("TButton", background = cls.get_current(cls.user_settings, "background"))
+        style.configure("TLabel", background = cls.get_current(cls.user_settings, "background"))
+        style.configure("TFrame", background = cls.get_current(cls.user_settings, "background"))
 
-
-    def reset_all_defaults(self, root, style):
+    @classmethod
+    def reset_all_defaults(cls, root, style):
         with open(self.user_settings, "w+") as f:
             f.seek(0)
             f.truncate()
             json.dump({}, f)
-        self.setup_defaults(root, style)
+        cls.setup_defaults(root, style)
     
-    def recolour_background(self, root, style):
+    @staticmethod
+    def recolour_background(root, style):
         colour = colorchooser.askcolor(title = "Choose background colour",
         initialcolor = "SystemButtonFace")
         root.config(background = colour[1])
