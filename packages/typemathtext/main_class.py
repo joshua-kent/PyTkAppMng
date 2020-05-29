@@ -6,25 +6,51 @@ import sympy as sy
 class typemathtextError(Exception):
     pass
 
-class text:
+class typemath:
     """Creates an object that can be used for easy-to-use methods to create calculators.
+    
+    It does this by creating methods to convert between Python (sympy) and LaTeX.
+    Furthermore, it creates a pointer that can be used to insert new text (in the
+    custom typemath format) in different places in the text.
+
+
+    Parameters:
+    
+        latex_text (str) -- a string written with LaTeX format.
+                            (e.g. "\int 4x^2 dx")
+    
+
+    Attributes ():
+    
+        pointer (int) -- the current position of the pointer
+
+                            : This determines where the string will be edited
+
+        pparsed (list) -- a list containing the parsed version of latex_text
+
+                            : This is only updated when primary_parse() is called
+
+        sparsed (str) -- a string containing the fully converted version of latex_text
+                         into standard Python/sympy format
+
+                            : This is only updated when secondary_parse() is called
 
 
 
     Written by Joshua Kent, last updated 29/05/2020.
     github.com/joshua-kent/PyTkAppMng"""
     
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    parse_info_dir = os.path.join(current_dir, "parse_info.json")
-    x, y = sy.symbols("x y")
+    _current_dir = os.path.dirname(os.path.realpath(__file__))
+    _parse_info_dir = os.path.join(_current_dir, "parse_info.json")
+    _x, _y = sy.symbols("x y")
 
-    def __init__(self, latex_text):
+    def __init__(self, latex_text): # edit this to support multiple initial formats
         self.latex_text = latex_text
         self.pointer = 0
         self.pparsed = []
         self.sparsed = []
-        self.primary_parse()
-        self.secondary_parse()
+        self.parse()
+        self.compile()
 
     def edit(self, text, insert = None, moveby = 1, moveto = None):
         """Edits latex text by parsing, editing, repositioning the pointer, recompiling
@@ -37,16 +63,14 @@ class text:
             moveby (int/None) -- how many items the pointer should move by [default: 1]
                                  (if moveby = 1: move pointer one item to right in parsed text,
                                  if moveby = -2: move pointer two items to left in parsed text)
-                                 
-                                 Notes:
-                                       This cannot have the same type as moveto
+                                    
+                                    : This cannot have the same type as moveto
 
             moveto (int/None) -- move pointer to an specific place in list [default: None]
                                  (if moveto = 2: place pointer after second item)
-                                 
-                                 Notes:
-                                       This cannot have the same type as moveby
-                                       This cannot be a negative integer.
+                                    
+                                    : This cannot have the same type as moveby
+                                    : This cannot be a negative integer.
         
         
         Example:
@@ -132,13 +156,13 @@ class text:
             i += 1
         return lst
 
-    def primary_parse(self):
+    def parse(self):
         r"""Splits a LaTeX math string into its parsed format.
 
         This parsed form can be used as a midway point between LaTex
-        and normal Python (sympy) formats. It is also useful for po
-        (e.g \frac{1}{2} (LaTeX) --> (primary_parse) --> ['\FRAC{', '1', '}', '{', '2', '}']
-        --> (secondary_parse) --> '(1)/(2)' --> 1/2 --> 0.5
+        and normal Python (sympy) formats. It is also useful for pointers.
+        (e.g \frac{1}{2} (LaTeX) --> (parse) --> ['\FRAC{', '1', '}', '{', '2', '}']
+        --> (compile) --> '(1)/(2)' --> 1/2 --> 0.5
         )
 
         
@@ -155,7 +179,7 @@ class text:
         output = []
         for char in self.latex_text:
             output.append(char)
-        with open(self.parse_info_dir, "r") as f:
+        with open(self._parse_info_dir, "r") as f:
             doc_ = json.load(f)
             specials = doc_["specials"]
             keywords = doc_["keywords"]
@@ -178,7 +202,7 @@ class text:
                 for i in range(len(output)):
                     if output[i] in tuple_list and output[i + 1] in tuple_list:
                         if output[i + 1] in ('x', 'y'):
-                            output[i] += "*{}".format(output[i + 1])
+                            output[i] += "*{}{}".format("typemath._", output[i + 1])
                         else:
                             output[i] += output[i + 1]
                         output.pop(i + 1)
@@ -188,9 +212,9 @@ class text:
         self.pparsed = output
         return self.pparsed
 
-    def secondary_parse(self):
-        output = self.pparsed
-        with open(self.parse_info_dir, "r") as f:
+    def compile(self):
+        output = self.pparsed.copy() # setting a variable to a list only creates a new reference, not id
+        with open(self._parse_info_dir, "r") as f:
             doc_ = json.load(f)
             keywords = doc_["keywords"]
             specials = doc_["specials"]
@@ -204,6 +228,11 @@ class text:
 
         self.sparsed = output
         return self.sparsed
+    
+    def eval(self):
+        self.parse()
+        self.compile()
+        return eval("".join(self.sparsed))
 
 if __name__ == "__main__":
-    txt = text("\int(4x^2)")
+    txt = typemath("\int(4x^2)")

@@ -5,8 +5,8 @@
 
     "keywords": [
         ["\\int", "sy.integrate("],
-        ["dx", ", x)"],
-        ["\frac{d}{dx}", "sy.diff"],
+        ["dx", ", _x)"],
+        ["\\frac{d}{dx}", "sy.diff"],
         ["e", "math.e"],
         ["\\pi", "math.pi"]
     ],
@@ -20,6 +20,7 @@
         ["\\sec(", "csc("],
         ["\\csc(", "csc("],
         ["\\cot(", "cot("],
+        ["}{", "}{"],
         ["{", "{"],
         ["}", "}"],
         ["(", "("],
