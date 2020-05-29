@@ -43,18 +43,18 @@ class init:
     def __init__(self, root):
         
         # gets the directories of modules in 'included' and 'added'
-        for files in os.walk(self.included):
-            root_ = files[0] # this will always be a directory, see os.walk()
+        for files_ in os.walk(self.included):
+            root_ = files_[0] # this will always be a directory, see os.walk()
             if os.path.dirname(root_) == self.included:
-                split_list = root_.split("\\")
-                if "__pycache__" not in split_list:
+                split_list_ = root_.split("\\")
+                if "__pycache__" not in split_list_:
                     self.included_apps_dirs.append(root_)
         self.amount_of_included_apps = len(self.included_apps_dirs)
-        for files in os.walk(self.added):
-            root_ = files[0]
+        for files_ in os.walk(self.added):
+            root_ = files_[0]
             if os.path.dirname(root_) == self.added:
-                split_list = root_.split("\\")
-                if "__pycache__" not in split_list:
+                split_list_ = root_.split("\\")
+                if "__pycache__" not in split_list_:
                     self.added_apps_dirs.append(root_)
         self.amount_of_added_apps = len(self.added_apps_dirs)
 

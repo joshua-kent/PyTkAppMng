@@ -1,5 +1,29 @@
 {
+    "specials": [
+        ["\\frac{", "FRAC{"]
+    ],
+
     "keywords": [
-        "\\int", "dx", "\\frac"
+        ["\\int", "sy.integrate("],
+        ["dx", ", x)"],
+        ["\frac{d}{dx}", "sy.diff"],
+        ["e", "math.e"],
+        ["\\pi", "math.pi"]
+    ],
+
+    "pointouts": [
+        ["\\left(", "("],
+        ["\\right)", ")"],
+        ["\\cos(", "cos("],
+        ["\\sin(", "csc("],
+        ["\\tan(", "csc("],
+        ["\\sec(", "csc("],
+        ["\\csc(", "csc("],
+        ["\\cot(", "cot("],
+        ["{", "{"],
+        ["}", "}"],
+        ["(", "("],
+        [")", ")"],
+        ["^", "**"]
     ]
 }
