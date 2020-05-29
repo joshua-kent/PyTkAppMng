@@ -15,11 +15,13 @@ class text:
         self.parse_latex(r"\int4x+\int2dx-3dx+\int4+\int2dxdx")
 
     def edit(self, text, moveby = 1, moveto = None):
-        if moveby == moveto == None or None not in [moveby, moveto]:
+        if moveby == moveto == None or None not in (moveby, moveto):
             raise typemathtextError("moveby and moveto cannot be set simultaneously")
 
-    def concatenate_chars(self, chars, *args): # for a list, this will combine characters together
-        # ie. concatenate_chars(["a", "b", "c", "d"], "abc") returns ["abc", "d"]
+    def concatenate_chars(self, chars, *args):
+        """
+        Add this in!!
+        """
         output = chars
         for item in args:
             i = 0
