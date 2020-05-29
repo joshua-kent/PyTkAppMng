@@ -1,12 +1,12 @@
-import json
 import os
+import json
 
 class typemathtextError(Exception):
     pass
 
 class text:
     """Creates an object that can be used for easy-to-use methods to create calculators."""
-
+    
     latex_text = ""
     parsed_latex_text = [] # LaTeX text separated into a list
     pointer = 0
