@@ -21,7 +21,7 @@ from tkinter.ttk import *
 from PIL import Image, ImageTk
 from functools import partial
 
-__version__ = "prerelease2.6b4 2020-05-29 12:45 BST"
+__version__ = "prerelease2.6b5 2020-05-29 15:59 BST"
 
 class init:
     current_dir = os.path.dirname(os.path.realpath(__file__))
