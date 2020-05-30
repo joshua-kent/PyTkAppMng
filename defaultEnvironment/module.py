@@ -1,14 +1,6 @@
 '''
-Information:
-If user defaults need to be imported, do so by changing setup_defaults()
-Imported modules should have an info.json file that contains title, version, author anddefault arguments
-Imported modules must be placed in useropts or included
-If the init() function requires arguments, put the defaults in a variable "default_args" in its __init__.py
-As functions are likely to have a lot of temporary variables, this can be avoided in functions, unless it helps avoid confusion.
-such as 'key' or 'value', are excluded)
-This is to avoid overrided needed variables and avoid confusion
-Use snake_case
-del _this_variable should be used to delete these temporary variables if you wish
+This module is only intended to be used internally, so its
+documentation may not be totally clear.
 '''
 
 import os.path
@@ -21,7 +13,7 @@ from tkinter.ttk import *
 from PIL import Image, ImageTk
 from functools import partial
 
-__version__ = "0.2.6b5"
+__version__ = "0.2.6b6"
 
 class init:
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -41,6 +33,17 @@ class init:
     amount_of_added_apps = 0
 
     def __init__(self, root):
+        # initiates the window and adds everything
+
+        # set up window
+        self.root = root
+        self.root.title("PyTk Application Manager {}".format(__version__))
+        self.root.iconphoto(False, ImageTk.PhotoImage(file = self.env_icon))
+        self.root.geometry("800x600+20+20")
+        self.root.resizable(True, True)
+        self.root.deiconify()
+        Grid.rowconfigure(self.root, 0, weight = 0)
+        Grid.columnconfigure(self.root, 0, weight = 0)
         
         # gets the directories of modules in 'included' and 'added'
         for files_ in os.walk(self.included):
@@ -58,52 +61,8 @@ class init:
                     self.added_apps_dirs.append(root_)
         self.amount_of_added_apps = len(self.added_apps_dirs)
 
-        # gets info about each module from their info.json file
-        for i in range(self.amount_of_included_apps + self.amount_of_added_apps):
-
-            # sets details based on if it is getting an app from 'included' or 'added'
-            if i < self.amount_of_included_apps:
-                mod_dir = self.included_apps_dirs[i]
-            else:
-                mod_dir = self.added_apps_dirs[i - self.amount_of_included_apps]
-            
-            split_dir = mod_dir.split("\\")
-            module = split_dir[len(split_dir) - 1]
-            info_json_directory = os.path.join(mod_dir, "info.json")
-
-            # gets settings from the info.json file (None if doesn't exist), puts them in info
-            info = {}
-            info["title"] = self.get_setting(info_json_directory, "title", "Unnamed app")
-            info["version"] = self.get_setting(info_json_directory, "version")
-            info["author"] = self.get_setting(info_json_directory, "author", "Unknown")
-            info["directory"] = mod_dir
-            info["default-args"] = self.get_setting(info_json_directory, "default-args")
-            info["hidden"] = self.get_setting(info_json_directory, "hidden", "False")
-            info["icon-antialiasing"] = self.get_setting(info_json_directory, "icon-antialiasing", "True")
-
-            # gets icon from the icon.png file (None if doesnt exist)
-            if os.path.isfile(os.path.join(self.included, module, "icon.png")):
-                info["icon"] = os.path.join(self.included, module, "icon.png")
-            elif os.path.isfile(os.path.join(self.added, module, "icon.png")):
-                info["icon"] = os.path.join(self.added, module, "icon.png")
-            else:
-                info["icon"] = None
-            
-            # sets the respective apps_info dictionary key (module) to (info)
-            if i < self.amount_of_included_apps:
-                self.included_apps_info[module] = info
-            else:
-                self.added_apps_info[module] = info
-
-        # set up window
-        self.root = root
-        self.root.title("PyTk Application Manager {}".format(__version__))
-        self.root.iconphoto(False, ImageTk.PhotoImage(file = self.env_icon))
-        self.root.geometry("800x600+20+20")
-        self.root.resizable(True, True)
-        self.root.deiconify()
-        Grid.rowconfigure(self.root, 0, weight = 0)
-        Grid.columnconfigure(self.root, 0, weight = 0)
+        # gets info from info.json in modules, and appends it to (included/added)_apps_info
+        self.get_json_info()
 
         # if things already exist in the window (i.e. after another app was previously open), delete them
         for item in self.root.winfo_children():
@@ -115,28 +74,10 @@ class init:
         self.style.configure("defEnv.TButton", theme = "winnative", relief = "flat")
 
         # setup window attributes in accordance to user_settings.json
-        self.setup_defaults()
+        self.setup_user_defaults()
 
-        # creates menu
-        self.menu = Menu(self.root)
-        self.root.config(menu = self.menu)
-
-        # creates file menu
-        file = Menu(self.menu, tearoff = 0)
-        file.add_command(label = "Import")
-        file.add_command(label = "Return to selection screen", command = partial(init, root))
-        file.insert_separator(2)
-        file.add_command(label = "Exit", command = exit)
-        self.menu.add_cascade(label = "File", menu = file)
-
-        # creates settings menu
-        settings = Menu(self.menu, tearoff = 0)
-        settings.add_command(label = "Change background colour", command = self.recolour_background)
-        settings.add_command(label = "Save current colour as default",
-                                command = lambda: self.set_setting(self.user_settings, "background", self.root.cget("background")))
-        settings.insert_separator(2)
-        settings.add_command(label = "Reset all to default", command = self.reset_all_defaults)
-        self.menu.add_cascade(label = "Settings", menu = settings)
+        # setup menu
+        self.create_menu()
 
         # creates frame
         self.frame = Frame(self.root, style = "frame.TFrame")
@@ -149,6 +90,11 @@ class init:
             self.frame.grid_columnconfigure(i, minsize = 60)
             self.frame.grid_rowconfigure(2 * i, minsize = 76)
         self.frame.grid()
+
+        self.create_included_buttons()
+
+    def create_included_buttons(self):
+        # creates buttons for included apps
 
         # add included apps buttons
         x = 0
@@ -193,7 +139,70 @@ class init:
                 x = (x + 1) % 4
                 if x == 0:
                     y += 2
-        
+    
+    def get_json_info(self):
+        # gets info about each module from their info.json file
+
+        for i in range(self.amount_of_included_apps + self.amount_of_added_apps):
+
+            # sets details based on if it is getting an app from 'included' or 'added'
+            if i < self.amount_of_included_apps:
+                mod_dir = self.included_apps_dirs[i]
+            else:
+                mod_dir = self.added_apps_dirs[i - self.amount_of_included_apps]
+            
+            split_dir = mod_dir.split("\\")
+            module = split_dir[len(split_dir) - 1]
+            info_json_directory = os.path.join(mod_dir, "info.json")
+
+            # gets settings from the info.json file (None if doesn't exist), puts them in info
+            info = {}
+            info["title"] = self.get_setting(info_json_directory, "title", "Unnamed app")
+            info["version"] = self.get_setting(info_json_directory, "version")
+            info["author"] = self.get_setting(info_json_directory, "author", "Unknown")
+            info["directory"] = mod_dir
+            info["default-args"] = self.get_setting(info_json_directory, "default-args")
+            info["hidden"] = self.get_setting(info_json_directory, "hidden", "False")
+            info["icon-antialiasing"] = self.get_setting(info_json_directory, "icon-antialiasing", "True")
+
+            # gets icon from the icon.png file (None if doesnt exist)
+            if os.path.isfile(os.path.join(self.included, module, "icon.png")):
+                info["icon"] = os.path.join(self.included, module, "icon.png")
+            elif os.path.isfile(os.path.join(self.added, module, "icon.png")):
+                info["icon"] = os.path.join(self.added, module, "icon.png")
+            else:
+                info["icon"] = None
+            
+            # sets the respective apps_info dictionary key (module) to (info)
+            if i < self.amount_of_included_apps:
+                self.included_apps_info[module] = info
+            else:
+                self.added_apps_info[module] = info
+
+    def create_menu(self):
+        # creates a menu for the window
+
+        # creates menu object
+        self.menu = Menu(self.root)
+        self.root.config(menu = self.menu)
+
+        # creates file menu
+        file = Menu(self.menu, tearoff = 0)
+        file.add_command(label = "Import")
+        file.add_command(label = "Return to selection screen", command = partial(init, self.root))
+        file.insert_separator(2)
+        file.add_command(label = "Exit", command = exit)
+        self.menu.add_cascade(label = "File", menu = file)
+
+        # creates settings menu
+        settings = Menu(self.menu, tearoff = 0)
+        settings.add_command(label = "Change background colour", command = self.recolour_background)
+        settings.add_command(label = "Save current colour as default",
+                                command = lambda: self.set_setting(self.user_settings, "background", self.root.cget("background")))
+        settings.insert_separator(2)
+        settings.add_command(label = "Reset all to default", command = self.reset_all_user_defaults)
+        self.menu.add_cascade(label = "Settings", menu = settings)
+
     def run_module(self, module, root, frame):
         # runs a module in /applications
 
@@ -281,7 +290,7 @@ class init:
                 return not_exist
 
     # self.__class__ acts like cls
-    def setup_defaults(self):
+    def setup_user_defaults(self):
         # sets up 'root' (Tk obj) and 'style' (Tkk style obj) to match user_defaults.json
 
         if self.get_setting(self.user_settings, "background") == None:
@@ -291,14 +300,14 @@ class init:
         self.style.configure("TLabel", background = self.__class__.get_setting(self.__class__.user_settings, "background"))
         self.style.configure("TFrame", background = self.__class__.get_setting(self.__class__.user_settings, "background"))
 
-    def reset_all_defaults(self):
+    def reset_all_user_defaults(self):
         # resets the user_settings.json folder to an empty file
 
         with open(self.__class__.user_settings, "w+") as f:
             f.seek(0)
             f.truncate()
             json.dump({}, f)
-        self.setup_defaults()
+        self.setup_user_defaults()
 
     def recolour_background(self):
         # recolours the background

@@ -5,7 +5,7 @@
 
     "keywords": [
         ["\\int", "sy.integrate("],
-        ["dx", ", _x)"],
+        ["dx", ", typemath._x)"],
         ["\\frac{d}{dx}", "sy.diff"],
         ["e", "math.e"],
         ["\\pi", "math.pi"]
