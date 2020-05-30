@@ -6,6 +6,7 @@
 
     "keywords": [
         ["\\int", "sy.integrate("],
+        ["\\ln", "log"],
         ["dx", ", typemath._x)"],
         ["DERIV", "sy.diff"],
         ["e", "math.e"],

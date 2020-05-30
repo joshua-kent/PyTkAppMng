@@ -53,7 +53,7 @@ class typemath:
         self.compile()
 
     def edit(self, text, insert = None, moveby = 1, moveto = None):
-        """Edits latex text by parsing, editing, repositioning the pointer, recompiling
+        """Edits latex text by parsing, editing, repositioning the pointer, recompiling.
 
 
         Parameters:
@@ -82,11 +82,14 @@ class typemath:
         Written by Joshua Kent, last updated 29/05/2020.
         github.com/joshua-kent/PyTkAppMng"""
 
+        # make sure moveby is only relative to what the new text is, also check
+        # that the new text is readable to the parser
+
         if moveby == moveto == None or None not in (moveby, moveto):
             raise typemathtextError("'moveby' and 'moveto' must be of different types.")
 
     def concatenate_chars(self, chars, *args):
-        """Connects items in a string into one item if they concatenate to some given value(s)
+        """Connects items in a string into one item if they concatenate to some given value(s).
 
 
         Parameters:
@@ -164,7 +167,7 @@ class typemath:
         This parsed form can be used as a midway point between LaTex
         and normal Python (sympy) formats. It is also useful for pointers.
         (e.g \frac{1}{2} (LaTeX) --> (parse) --> ['\FRAC{', '1', '}', '{', '2', '}']
-        --> (compile) --> '(1)/(2)' --> 1/2 --> 0.5
+        --> (compile) --> '(1)/(2)' --> (evaluate) --> 0.5
         )
 
         
@@ -215,6 +218,16 @@ class typemath:
     def compile(self):
         """Fully converts the parsed text list into a sympy-readable format as a
         string to be executed.
+
+        Only the current parsed LaTeX text is compiled. Instead of directly
+        calling this function, it is automatically called when a new typemath
+        instance is initiated, and is also called automatically when the 'typemath.edit'
+        method is called.
+        
+
+        Returns:
+
+            This returns the new string and also puts it in the attribute 'sparsed'.
 
 
 
@@ -292,6 +305,13 @@ class typemath:
 # ]--
     
     def evaluate(self):
+        """Evaluates the current math text and returns its value.
+        
+        
+        
+        Written by Joshua Kent, last updated 30/05/2020.
+        """
+
         self.parse()
         self.compile()
         return eval("".join(self.sparsed))
