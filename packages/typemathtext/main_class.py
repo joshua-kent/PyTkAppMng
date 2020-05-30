@@ -131,22 +131,22 @@ class typemath:
     
     @staticmethod
     def concatenate_ints(lst):
-        current_list = lst
-        old_list = []
+        output = []
+        numbers = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
         tuple_list = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'x', 'y', "math.e", "math.pi")
-        while current_list != old_list:
-            old_list = current_list
+        for i in range(len(lst)):
             try:
-                for i in range(len(current_list)):
-                    if current_list[i] in tuple_list and current_list[i + 1] in tuple_list:
-                        if current_list[i + 1] in ('x', 'y'):
-                            current_list[i] += "*{}".format(current_list[i + 1])
-                        else:
-                            current_list[i] += current_list[i + 1]
-                        current_list.pop(i + 1)
+                if lst[i] in tuple_list and lst[i - 1] in tuple_list:
+                    if lst[i] in ("x", "y"):
+                        output.append("*")
+                        output.append(lst[i])
+                    else:
+                        output[-1] += lst[i]
+                else:
+                    output.append(lst[i])
             except:
-                pass
-        return current_list
+                output.append(lst[i])
+        return output
     
     def swap(self, lst, old, new):
         i = 0
@@ -155,6 +155,8 @@ class typemath:
                 lst[i] = new
             i += 1
         return lst
+
+# THIS IS MESSY CODE, TAMPERING COULD EASILY BREAK IT --[
 
     def parse(self):
         r"""Splits a LaTeX math string into its parsed format.
@@ -178,61 +180,121 @@ class typemath:
         # isolate keywords into list
         output = []
         for char in self.latex_text:
-            output.append(char)
+            if char != " ":
+                output.append(char)
         with open(self._parse_info_dir, "r") as f:
             doc_ = json.load(f)
             specials = doc_["specials"]
+            specials_get = [item[0] for item in specials]
+            specials_set = [item[1] for item in specials]
+
             keywords = doc_["keywords"]
+            keywords_get = [item[0] for item in keywords]
+            keywords_set = [item[1] for item in keywords]
+
             pointouts = doc_["pointouts"]
-        for lst_ in specials:
-            self.concatenate_chars(output, lst_[0])
-            self.swap(output, lst_[0], lst_[1])
-        for lst_ in keywords:
-            self.concatenate_chars(output, lst_[0])
-        for lst_ in pointouts:
-            self.concatenate_chars(output, lst_[0])
-            self.swap(output, lst_[0], lst_[1])
+            pointouts_get = [item[0] for item in pointouts]
+            pointouts_set = [item[1] for item in pointouts]
+
+
+        for i in range(len(specials)):
+            self.concatenate_chars(output, specials_get[i])
+            self.swap(output, specials_get[i], specials_set[i])
+        for i in range(len(keywords)):
+            self.concatenate_chars(output, keywords_get[i])
+        for i in range(len(pointouts)):
+            self.concatenate_chars(output, pointouts_get[i])
+            self.swap(output, pointouts_get[i], pointouts_set[i])
         
         # connect consecutive numbers, multiply consecutive numbers & variables to create terms
-        old_list = []
-        tuple_list = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'x', 'y')
-        while output != old_list:
-            old_list = output
-            try:
-                for i in range(len(output)):
-                    if output[i] in tuple_list and output[i + 1] in tuple_list:
-                        if output[i + 1] in ('x', 'y'):
-                            output[i] += "*{}{}".format("typemath._", output[i + 1])
-                        else:
-                            output[i] += output[i + 1]
-                        output.pop(i + 1)
-            except:
-                pass
+        output = self.concatenate_ints(output)
 
         self.pparsed = output
         return self.pparsed
 
     def compile(self):
+        """Fully converts the parsed text list into a sympy-readable format as a
+        string to be executed.
+
+
+
+        Written by Joshua Kent, last updated 30/05/2020.
+        github.com/joshua-kent/PyTkAppMng
+        """
+
         output = self.pparsed.copy() # setting a variable to a list only creates a new reference, not id
         with open(self._parse_info_dir, "r") as f:
             doc_ = json.load(f)
             keywords = doc_["keywords"]
-            specials = doc_["specials"]
-        for lst_ in keywords:
-            self.swap(output, lst_[0], lst_[1])
+            keywords_get = [item[0] for item in keywords]
+            keywords_set = [item[1] for item in keywords]
 
-        # Complete (needs to convert pparsed list to a sympy/Python readable format)
-        # do this by creating a way for sorting nested curly brackets and converting
-        # ie \frac{a}{b} --> (a)/(b) -- needs to have brackets to avoid miscalculations.
-        # This also edits self.pparsed, it should not do that.
+            specials = doc_["specials"]
+            specials_get = [item[0] for item in specials]
+            specials_set =[item[1] for item in specials]
+        
+        for i in range(len(keywords)):
+            self.swap(output, keywords_get[i], keywords_set[i])
+
+        # Creates tokens for each special value (that need more work to change)
+        # In format:
+        # {"token_number": (token's value, position)}
+        # token_numbers gives a list of the keys of tokens in order
+        # token_values gives the value that the token represents
+        # token_positions gives a list of the positions of each token in output
+        current_token_number = 1
+        tokens = {}
+        for i in range(len(output)):
+            if output[i] == "}":
+                tokens[f"{current_token_number}a"] = ("}", i)
+                for k in range(len(output)):
+                    t = len(output) - k - 1
+                    token_positions = [item[1] for item in tokens.values()]
+                    if (output[t] == "{" or output[t] in specials_set) and t < i:
+                        if not token_positions.__contains__(t):
+                            tokens[f"{current_token_number}b"] = (output[t], t)
+                            break
+                current_token_number += 1
+        token_numbers = [key for key in tokens.keys()]
+        token_values = [item[0] for item in tokens.values()]
+        token_positions = [item[1] for item in tokens.values()]
+
+        # convert \frac{a}{b} to (a)/(b)
+        for i in range(len(tokens)):
+            if token_values[i] == "FRAC{": # first {
+                token_1_number = token_numbers[i]
+                token_1 = tokens[token_1_number]
+                token_1_pos = token_1[1]
+                corresponding_token_1_number = token_1_number.replace("b", "a")
+                corresponding_token_1 = tokens[corresponding_token_1_number] # first }
+                corresponding_token_1_pos = corresponding_token_1[1]
+                for k in range(len(token_positions)):
+                    if token_positions[k] == corresponding_token_1[1] + 1:
+                        if token_values[k] == "{": # second {
+                            token_2_number = token_numbers[k]
+                            token_2  = tokens[token_2_number]
+                            token_2_pos = token_2[1]
+                            corresponding_token_2_number = token_2_number.replace("b", "a")
+                            corresponding_token_2 = tokens[corresponding_token_2_number] # second }
+                            corresponding_token_2_pos = corresponding_token_2[1]
+                            break
+                if "corresponding_token_2" in locals():
+                    output[token_1_pos] = "("
+                    output[corresponding_token_1_pos] = ")/"
+                    output[token_2_pos] = "("
+                    output[corresponding_token_2_pos] = ")"
+        
+        output = "".join(output)
 
         self.sparsed = output
         return self.sparsed
+
+# ]--
     
-    def eval(self):
+    def evaluate(self):
         self.parse()
         self.compile()
         return eval("".join(self.sparsed))
 
 if __name__ == "__main__":
-    txt = typemath("\int(4x^2)")
+    txt = typemath(r"\frac{5}{2}")

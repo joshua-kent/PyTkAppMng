@@ -1,12 +1,13 @@
 {
     "specials": [
+        ["\\frac{d}{dx}", "DERIV"],
         ["\\frac{", "FRAC{"]
     ],
 
     "keywords": [
         ["\\int", "sy.integrate("],
         ["dx", ", typemath._x)"],
-        ["\\frac{d}{dx}", "sy.diff"],
+        ["DERIV", "sy.diff"],
         ["e", "math.e"],
         ["\\pi", "math.pi"]
     ],
@@ -20,7 +21,6 @@
         ["\\sec(", "csc("],
         ["\\csc(", "csc("],
         ["\\cot(", "cot("],
-        ["}{", "}{"],
         ["{", "{"],
         ["}", "}"],
         ["(", "("],

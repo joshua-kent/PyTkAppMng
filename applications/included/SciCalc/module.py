@@ -58,6 +58,6 @@ class init:
 if __name__ == "__main__":
     root = Tk()
     init(root)
-    new = typemathtext.text()
-    new.edit("hi", 3, 4)
+    new = typemathtext.typemath("\int 4x^2+1dx")
+    print(new.sparsed)
     root.mainloop()
