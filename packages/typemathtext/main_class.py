@@ -45,7 +45,6 @@ class typemath:
     
     _current_dir = os.path.dirname(os.path.realpath(__file__))
     _parse_info_dir = os.path.join(_current_dir, "parse_info.json")
-    _x, _y = sy.symbols("x y")
 
     def __init__(self, latex_input): # edit this to support multiple initial formats
         self.latex_input = latex_input
@@ -53,6 +52,10 @@ class typemath:
         self.compiled = ""
         self.parse()
         self.compile()
+        try:
+            self.evaluate = eval(self.compile())
+        except: # the compiled form may currently be incomplete and return an error
+            self.evaluate = None
         self.pointer = len(self.parsed)
 
     def parse(self, text = None, require_dollars = True):
@@ -328,18 +331,6 @@ class typemath:
     
     def decompile(self):
         pass
-    
-    def evaluate(self):
-        """Evaluates the current math text and returns its value.
-        
-        
-        
-        Written by Joshua Kent, last updated 30/05/2020.
-        """
-
-        self.parse()
-        self.compile()
-        return eval("".join(self.compiled))
 
     def refresh(self, origin):
         # adjust other values (for when one changes, so attributes are not desynced)
@@ -348,9 +339,10 @@ class typemath:
             origin = self.__fixup(origin)
             self.deparse()
             self.compile()
-        elif origin is self.compiled:
-            self.decompile()
-            self.deparse()
+            try:
+                self.evaluate = eval(self.compiled)
+            except: # self.compiled may not have correct syntax and return an error
+                self.evaluate = None
         
     def __str__(self):
         return self.compiled
