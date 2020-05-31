@@ -19,7 +19,7 @@ class typemath:
 
     Parameters:
     
-        latex_text (str) -- a string written with LaTeX format.
+        latex_input (str) -- a string written with LaTeX format.
                             (e.g. "\int 4x^2 dx")
     
 
@@ -29,11 +29,11 @@ class typemath:
 
                                 This determines where the string will be edited
 
-        pparsed (list) -- a list containing the parsed version of latex_text
+        parsed (list) -- a list containing the parsed version of latex_input
 
                                 This is only updated when primary_parse() is called
 
-        sparsed (str) -- a string containing the fully converted version of latex_text
+        compiled (str) -- a string containing the fully converted version of latex_input
                          into standard Python/sympy format
 
                                 This is only updated when secondary_parse() is called
@@ -47,13 +47,13 @@ class typemath:
     _parse_info_dir = os.path.join(_current_dir, "parse_info.json")
     _x, _y = sy.symbols("x y")
 
-    def __init__(self, latex_text): # edit this to support multiple initial formats
-        self.latex_text = latex_text
-        self.pparsed = []
-        self.sparsed = ""
+    def __init__(self, latex_input): # edit this to support multiple initial formats
+        self.latex_input = latex_input
+        self.parsed = []
+        self.compiled = ""
         self.parse()
         self.compile()
-        self.pointer = len(self.pparsed)
+        self.pointer = len(self.parsed)
 
     def parse(self, text = None, require_dollars = True):
         r"""Splits a LaTeX math string into its parsed format.
@@ -66,7 +66,7 @@ class typemath:
         
         Returns:
 
-            Returns self.pparsed, which is the list that 'primary_parse' has generated.
+            Returns self.parsed, which is the list that 'primary_parse' has generated.
 
         
         
@@ -75,7 +75,7 @@ class typemath:
 
         original_text = text # this will not change, which lets us determine if the argument was None later on
         if text == None:
-            text = self.latex_text
+            text = self.latex_input
 
         # check if the text starts and ends with $ (to confirm it is a LaTeX string)
         if (text[0], text[-1]) != ("$", "$") and require_dollars:
@@ -93,9 +93,9 @@ class typemath:
         # connect consecutive numbers, multiply consecutive numbers & variables to create terms
         output = self.__concatenate_ints(output)
 
-        # if the original argument for 'text' was None (which means to edit 'pparsed' argument instead)
+        # if the original argument for 'text' was None (which means to edit 'parsed' argument instead)
         if original_text is None:
-            self.pparsed = output
+            self.parsed = output
 
         return output
 
@@ -111,7 +111,7 @@ class typemath:
 
         Returns:
 
-            This returns the new string and also puts it in the attribute 'sparsed'.
+            This returns the new string and also puts it in the attribute 'compiled'.
 
 
 
@@ -119,9 +119,9 @@ class typemath:
         github.com/joshua-kent/PyTkAppMng
         """
 
-        # if text is not set, automatically compile attribute 'pparsed' instead
+        # if text is not set, automatically compile attribute 'parsed' instead
         if text is None:
-            output = self.pparsed.copy() # setting a variable to a list only creates a new reference, not id
+            output = self.parsed.copy() # setting a variable to a list only creates a new reference, not id
         else:
             output = text
         
@@ -189,30 +189,30 @@ class typemath:
         # join together output and return
         output = "".join(output)
         if text is None:
-            self.sparsed = output
-        return self.sparsed
+            self.compiled = output
+        return self.compiled
 
-    def edit(self, latex_text = None, parsed_list = None, latex_insert = None, parsed_insert = None, abs_pointer = None):
+    def edit(self, latex_input = None, parsed_input = None, latex_insert = None, parsed_insert = None, abs_pointer = None):
         """Edits latex text by parsing, editing, repositioning the pointer, recompiling.
 
 
         Parameters:
         
-            latex_text (str/None) -- the LaTeX string that is to be edited. (default: None)
+            latex_input (str/None) -- the LaTeX string that is to be edited. (default: None)
 
-                                    If this and 'parsed_list' are both None, then the
-                                    instance's 'pparsed' attribute will automatically be
+                                    If this and 'parsed_input' are both None, then the
+                                    instance's 'parsed' attribute will automatically be
                                     edited.
-                                    If both this and 'parsed_list' are set, then 'parsed_list'
+                                    If both this and 'parsed_input' are set, then 'parsed_input'
                                     will automatically be used, rather than this.
 
-            parsed_list (list/None) -- the already parsed list that is to be edited. (default: None)
+            parsed_input (list/None) -- the already parsed list that is to be edited. (default: None)
 
-                                    If this and 'latex_text' are both None, then the
-                                    instance's 'pparsed' attribute will automatically be
+                                    If this and 'latex_input' are both None, then the
+                                    instance's 'parsed' attribute will automatically be
                                     edited.
-                                    If both this and 'latex_text' are set, then this
-                                    will automatically be used, rather than 'latex_text'.
+                                    If both this and 'latex_input' are set, then this
+                                    will automatically be used, rather than 'latex_input'.
 
             latex_insert (str/None) -- the LaTeX string to be inserted in. (default: None)
 
@@ -236,6 +236,13 @@ class typemath:
                                     If this value is equal to none, the default will become the
                                     'pointer' attribute of the instance.
 
+
+        Returns:
+
+                The new value of the text in the parsed list format. If no input arguments
+                ('latex_input' and 'parsed_input') are given, then the instance's attributes
+                are also updated, and self.parsed is returned.
+
         
         Example:
 
@@ -244,12 +251,12 @@ class typemath:
 
             As typemath() automatically sets its instance attribute 'pointer' to the length of the parsed text, it will
             edit the end. In this example, 'pointer' will first equal 7. When edit() is called, "8" will be appended
-            to the end of the 'pparsed' attribute, and its 'pointer' attribute will increase by one. All other attributes
+            to the end of the 'parsed' attribute, and its 'pointer' attribute will increase by one. All other attributes
             will be automatically updated with it, which is why this method is useful.
 
             Hence, this method results in:
-            my_integral.pparsed = ["\int", "4", "*", "x", "**", "2", "dx", "+", "4"]
-            my_integral.sparsed = "sy.integrate(4*typemath._x**2, typemath._x)+4"
+            my_integral.parsed = ["\int", "4", "*", "x", "**", "2", "dx", "+", "4"]
+            my_integral.compiled = "sy.integrate(4*typemath._x**2, typemath._x)+4"
             my_integral.pointer = 9
         
         
@@ -257,12 +264,12 @@ class typemath:
         github.com/joshua-kent/PyTkAppMng"""
 
         # check value types
-        if latex_text is not None:
-            if not isinstance(latex_text, str):
-                raise typemathtextError("'latex_text' must be either a string or None")
-        if parsed_list is not None:
-            if not isinstance(parsed_list, list):
-                raise typemathtextError("'parsed_list' must be either a list or None")
+        if latex_input is not None:
+            if not isinstance(latex_input, str):
+                raise typemathtextError("'latex_input' must be either a string or None")
+        if parsed_input is not None:
+            if not isinstance(parsed_input, list):
+                raise typemathtextError("'parsed_input' must be either a list or None")
         if latex_insert is not None:
             if not isinstance(latex_insert, str):
                 raise typemathtextError("'latex_insert' must be either a string or None")
@@ -274,9 +281,9 @@ class typemath:
                 raise typemathtextError("'abs_pointer' must be either an integer or None")
 
         # equal value warnings
-        if latex_text is not None and parsed_list is not None:
-            warnings.warn("typemathtext: 'latex_text' and 'parsed_list' are both set. Automatically using 'parsed_list'.")
-            latex_text = None
+        if latex_input is not None and parsed_input is not None:
+            warnings.warn("typemathtext: 'latex_input' and 'parsed_input' are both set. Automatically using 'parsed_input'.")
+            latex_input = None
         if latex_insert is not None and parsed_insert is not None:
             warnings.warn("typemathtext: 'latex_insert' and 'parsed_insert' are both set. Automatically using 'parsed_insert'.")
             latex_insert = None
@@ -286,15 +293,15 @@ class typemath:
         # set values
         reference_self = False
 
-        if latex_text is not None:
-            parsed_list = self.parse(latex_text)
-        if (latex_text, parsed_list) == (None, None):
+        if latex_input is not None:
+            parsed_input = self.parse(latex_input)
+        if (latex_input, parsed_input) == (None, None):
             reference_self = True
-            parsed_list = self.pparsed
+            parsed_input = self.parsed
             pointer = self.pointer
         else:
             if abs_pointer is None:
-                pointer = len(parsed_list)
+                pointer = len(parsed_input)
             else:
                 pointer = abs_pointer
 
@@ -304,17 +311,17 @@ class typemath:
         
         # As parsed_insert will be a list, insert each of its item to the main list and adjust the pointer
         for i in parsed_insert:
-            parsed_list.insert(pointer, i)
+            parsed_input.insert(pointer, i)
             pointer += 1
             if abs_pointer is None:
                 self.pointer += 1
 
         # if it is the instance that is edited, adjust accordingly
         if reference_self:
-            self.pparsed = parsed_list
-            self.refresh(self.pparsed)
+            self.parsed = parsed_input
+            self.refresh(self.parsed)
 
-        return parsed_list
+        return parsed_input
 
     def deparse(self):
         pass
@@ -332,19 +339,21 @@ class typemath:
 
         self.parse()
         self.compile()
-        return eval("".join(self.sparsed))
+        return eval("".join(self.compiled))
 
     def refresh(self, origin):
         # adjust other values (for when one changes, so attributes are not desynced)
 
-        if origin is self.pparsed:
+        if origin is self.parsed:
             origin = self.__fixup(origin)
             self.deparse()
             self.compile()
-        elif origin is self.sparsed:
+        elif origin is self.compiled:
             self.decompile()
             self.deparse()
         
+    def __str__(self):
+        return self.compiled
 
     def __concatenate_chars(self, chars, string):
         # concatenates consecutive items in a string if they match some string
