@@ -4,7 +4,7 @@ import warnings
 import math
 import os
 import json
-import sympy as sy
+import sympy
 
 class typemathtextError(Exception):
     pass
@@ -259,11 +259,11 @@ class typemath:
 
             Hence, this method results in:
             my_integral.parsed = ["\int", "4", "*", "x", "**", "2", "dx", "+", "4"]
-            my_integral.compiled = "sy.integrate(4*typemath._x**2, typemath._x)+4"
+            my_integral.compiled = "sympy.integrate(4*sympy.symbols("x")**2, sympy.symbols("x"))+4"
             my_integral.pointer = 9
         
         
-        Written by Joshua Kent, last updated 31/05/2020.
+        Written by Joshua Kent, last updated 01/06/2020.
         github.com/joshua-kent/PyTkAppMng"""
 
         # check value types

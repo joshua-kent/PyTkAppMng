@@ -5,14 +5,14 @@
     ],
 
     "keywords": [
-        ["\\int", "sy.integrate("],
+        ["\\int", "sympy.integrate("],
         ["\\ln", "log"],
-        ["dx", ", sy.symbols(\"x\"))"],
-        ["DERIV", "sy.diff"],
+        ["dx", ", sympy.symbols(\"x\"))"],
+        ["DERIV", "sympy.diff"],
         ["e", "math.e"],
         ["\\pi", "math.pi"],
-        ["x", "sy.symbols(\"x\")"],
-        ["y", "sy.symbols(\"y\")"]
+        ["x", "sympy.symbols(\"x\")"],
+        ["y", "sympy.symbols(\"y\")"]
     ],
 
     "pointouts": [
