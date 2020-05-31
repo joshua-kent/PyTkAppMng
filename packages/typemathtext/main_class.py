@@ -233,6 +233,9 @@ class typemath:
             abs_pointer (int/None) -- the absolute position in the parsed list where the pointer
                                       will move to. (default: None)
 
+                                    If this value is equal to none, the default will become the
+                                    'pointer' attribute of the instance.
+
         
         Example:
 
