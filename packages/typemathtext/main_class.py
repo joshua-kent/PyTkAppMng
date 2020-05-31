@@ -1,3 +1,6 @@
+# To test, run in the terminal 'ipython -i main_class.py'
+
+import warnings
 import math
 import os
 import json
@@ -20,20 +23,20 @@ class typemath:
                             (e.g. "\int 4x^2 dx")
     
 
-    Attributes ():
+    Attributes:
     
         pointer (int) -- the current position of the pointer
 
-                            : This determines where the string will be edited
+                                This determines where the string will be edited
 
         pparsed (list) -- a list containing the parsed version of latex_text
 
-                            : This is only updated when primary_parse() is called
+                                This is only updated when primary_parse() is called
 
         sparsed (str) -- a string containing the fully converted version of latex_text
                          into standard Python/sympy format
 
-                            : This is only updated when secondary_parse() is called
+                                This is only updated when secondary_parse() is called
 
 
 
@@ -46,91 +49,152 @@ class typemath:
 
     def __init__(self, latex_text): # edit this to support multiple initial formats
         self.latex_text = latex_text
-        self.pointer = 0
         self.pparsed = []
-        self.sparsed = []
+        self.sparsed = ""
         self.parse()
         self.compile()
+        self.pointer = len(self.pparsed)
 
-    def edit(self, text, insert = None, moveby = 1, moveto = None):
+    def edit(self, latex_text = None, parsed_list = None, latex_insert = None, parsed_insert = None, abs_pointer = None):
         """Edits latex text by parsing, editing, repositioning the pointer, recompiling.
 
 
         Parameters:
-
-            text (str) -- a string of LaTeX text (usually in format r"$[text]$")
-
-            moveby (int/None) -- how many items the pointer should move by [default: 1]
-                                 (if moveby = 1: move pointer one item to right in parsed text,
-                                 if moveby = -2: move pointer two items to left in parsed text)
-                                    
-                                    : This cannot have the same type as moveto
-
-            moveto (int/None) -- move pointer to an specific place in list [default: None]
-                                 (if moveto = 2: place pointer after second item)
-                                    
-                                    : This cannot have the same type as moveby
-                                    : This cannot be a negative integer.
         
-        
-        Example:
+            latex_text (str/None) -- the LaTeX string that is to be edited. (default: None)
 
-            [insert later]
+                                    If this and 'parsed_list' are both None, then the
+                                    instance's 'pparsed' attribute will automatically be
+                                    edited.
+                                    If both this and 'parsed_list' are set, then 'parsed_list'
+                                    will automatically be used, rather than this.
 
-        
-        
-        Written by Joshua Kent, last updated 29/05/2020.
-        github.com/joshua-kent/PyTkAppMng"""
+            parsed_list (list/None) -- the already parsed list that is to be edited. (default: None)
 
-        # make sure moveby is only relative to what the new text is, also check
-        # that the new text is readable to the parser
+                                    If this and 'latex_text' are both None, then the
+                                    instance's 'pparsed' attribute will automatically be
+                                    edited.
+                                    If both this and 'latex_text' are set, then this
+                                    will automatically be used, rather than 'latex_text'.
 
-        if moveby == moveto == None or None not in (moveby, moveto):
-            raise typemathtextError("'moveby' and 'moveto' must be of different types.")
+            latex_insert (str/None) -- the LaTeX string to be inserted in. (default: None)
 
-    def concatenate_chars(self, chars, *args):
-        """Connects items in a string into one item if they concatenate to some given value(s).
+                                    If this and 'parsed_insert' are both None, then an error
+                                    will occur. If you wish to only change the pointer attribute,
+                                    then use the 'set_pointer' method.
+                                    If both this and 'parsed_insert' are set, then 'parsed_insert'
+                                    will automatically be used, rather than this.
 
+            parsed_insert (list/None) -- the already parsed list that is to be edited. (default: None)
 
-        Parameters:
-
-            chars (list) -- the list to be edited
+                                    If this and 'latex_insert' are both None, then an error
+                                    will occur. If you wish to only change the pointer attribute,
+                                    then use the 'set_pointer' method.
+                                    If both this and 'latex_insert' are set, then this will
+                                    automatically be used, rather than 'latex_insert'.
             
-            *args (str) -- list strings that need to be concatenated (in that order)
-
-
-        Returns:
-
-            Returns a new list with the given concatenations
-
-
-        Example:
-
-            concatenate_chars(["h", "e", "l", "l", "o"], "he", "ll")
-
-            As in the list, there are two consecutive items that together create "he",
-            these are concatenated. Likewise for "ll".
-
-            This returns the list: ["he", "ll", o]
+            abs_pointer (int/None) -- the absolute position in the parsed list where the pointer
+                                      will move to. (default: None)
 
         
+        Example:
 
+            my_integral = typemath("$\int 4x^2 dx$") -> This gets parsed to ["\int", "4", "*", "x", "**", "2", "dx"]
+            my_integral.edit(latex_insert = "$+4$")
+
+            As typemath() automatically sets its instance attribute 'pointer' to the length of the parsed text, it will
+            edit the end. In this example, 'pointer' will first equal 7. When edit() is called, "8" will be appended
+            to the end of the 'pparsed' attribute, and its 'pointer' attribute will increase by one. All other attributes
+            will be automatically updated with it, which is why this method is useful.
+
+        
+        
         Written by Joshua Kent, last updated 29/05/2020.
         github.com/joshua-kent/PyTkAppMng"""
 
-        for item in args:
-            i = 0
-            while i <= len(chars) - len(item):
-                place_check = ""
-                for k in range(len(item)):
-                    place_check += chars[i + k]
-                if place_check == item:
-                    chars[i] = item
-                    q = len(item) - 1
-                    while q > 0:
-                        chars.pop(i + q)
-                        q -= 1
-                i += 1
+        # check value types
+        if latex_text is not None:
+            if not isinstance(latex_text, str):
+                raise typemathtextError("'latex_text' must be either a string or None")
+        if parsed_list is not None:
+            if not isinstance(parsed_list, list):
+                raise typemathtextError("'parsed_list' must be either a list or None")
+        if latex_insert is not None:
+            if not isinstance(latex_insert, str):
+                raise typemathtextError("'latex_insert' must be either a string or None")
+        if parsed_insert is not None:
+            if not isinstance(parsed_insert, list):
+                raise typemathtextError("'parsed_insert' must be either a list or None")
+        if abs_pointer is not None:
+            if not isinstance(abs_pointer, int):
+                raise typemathtextError("'abs_pointer' must be either an integer or None")
+
+        # equal value warnings
+        if latex_text is not None and parsed_list is not None:
+            warnings.warn("typemathtext: 'latex_text' and 'parsed_list' are both set. Automatically using 'parsed_list'.")
+            latex_text = None
+        if latex_insert is not None and parsed_insert is not None:
+            warnings.warn("typemathtext: 'latex_insert' and 'parsed_insert' are both set. Automatically using 'parsed_insert'.")
+            latex_insert = None
+        if latex_insert is None and parsed_insert is None:
+            raise typemathtextError("Something must be inserted to edit. If you wish to move the pointer, use the 'set_pointer' method.")
+
+        # set values
+        reference_self = False
+
+        if latex_text is not None:
+            parsed_list = self.parse(latex_text)
+        if (latex_text, parsed_list) == (None, None):
+            reference_self = True
+            parsed_list = self.pparsed
+            pointer = self.pointer
+        else:
+            if abs_pointer is None:
+                pointer = len(parsed_list)
+            else:
+                pointer = abs_pointer
+
+        if latex_insert is not None:
+            parsed_insert = self.parse(latex_insert)
+        
+        for i in parsed_insert:
+            parsed_list.insert(pointer, i)
+            pointer += 1
+            if abs_pointer is None:
+                self.pointer += 1
+
+        if reference_self:
+            self.pparsed = parsed_list
+            self.refresh(self.pparsed)
+
+        return parsed_list
+            
+    def refresh(self, origin):
+        if origin is self.pparsed:
+            origin = self.fixup(origin)
+            self.deparse()
+            self.compile()
+        elif origin is self.sparsed:
+            self.decompile()
+            self.deparse()
+        
+
+    def concatenate_chars(self, chars, string):
+        output = chars.copy()
+        for i in range(len(chars)):
+            place_check = ""
+            for k in range(len(string)):
+                try:
+                    place_check += output[i + k]
+                except:
+                    break
+            if place_check == string:
+                output[i] = string
+                q = len(string) - 1
+                while q > 0:
+                    output.pop(i + 1)
+                    q -= 1
+        return output
     
     @staticmethod
     def concatenate_ints(lst):
@@ -140,7 +204,7 @@ class typemath:
         for i in range(len(lst)):
             try:
                 if lst[i] in tuple_list and lst[i - 1] in tuple_list:
-                    if lst[i] in ("x", "y"):
+                    if lst[i] in ("x", "y", "math.e", "math.pi"):
                         output.append("*")
                         output.append(lst[i])
                     else:
@@ -152,39 +216,15 @@ class typemath:
         return output
     
     def swap(self, lst, old, new):
+        lst = lst.copy()
         i = 0
         for item in lst:
             if item == old:
                 lst[i] = new
             i += 1
         return lst
-
-# THIS IS MESSY CODE, TAMPERING COULD EASILY BREAK IT --[
-
-    def parse(self):
-        r"""Splits a LaTeX math string into its parsed format.
-
-        This parsed form can be used as a midway point between LaTex
-        and normal Python (sympy) formats. It is also useful for pointers.
-        (e.g \frac{1}{2} (LaTeX) --> (parse) --> ['\FRAC{', '1', '}', '{', '2', '}']
-        --> (compile) --> '(1)/(2)' --> (evaluate) --> 0.5
-        )
-
-        
-        Returns:
-
-            Returns self.pparsed, which is the list that 'primary_parse' has generated.
-
-        
-        
-        Written by Joshua Kent, last updated 29/05/2020.
-        github.com/joshua-kent/PyTkAppMng"""
-
-        # isolate keywords into list
-        output = []
-        for char in self.latex_text:
-            if char != " ":
-                output.append(char)
+    
+    def fixup(self, lst):
         with open(self._parse_info_dir, "r") as f:
             doc_ = json.load(f)
             specials = doc_["specials"]
@@ -199,23 +239,84 @@ class typemath:
             pointouts_get = [item[0] for item in pointouts]
             pointouts_set = [item[1] for item in pointouts]
 
-
         for i in range(len(specials)):
-            self.concatenate_chars(output, specials_get[i])
-            self.swap(output, specials_get[i], specials_set[i])
+            lst = self.concatenate_chars(lst, specials_get[i])
+            lst = self.swap(lst, specials_get[i], specials_set[i])
         for i in range(len(keywords)):
-            self.concatenate_chars(output, keywords_get[i])
+            lst = self.concatenate_chars(lst, keywords_get[i])
         for i in range(len(pointouts)):
-            self.concatenate_chars(output, pointouts_get[i])
-            self.swap(output, pointouts_get[i], pointouts_set[i])
+            lst = self.concatenate_chars(lst, pointouts_get[i])
+            lst = self.swap(lst, pointouts_get[i], pointouts_set[i])
+        
+        return lst
+
+# THIS IS MESSY CODE, TAMPERING COULD EASILY BREAK IT --[
+
+    def parse(self, text = None, require_dollars = True):
+        r"""Splits a LaTeX math string into its parsed format.
+
+        This parsed form can be used as a midway point between LaTex
+        and normal Python (sympy) formats. It is also useful for pointers.
+        (e.g '\$frac{1}{2}$' (LaTeX) --> (parse) --> ['\FRAC{', '1', '}', '{', '2', '}']
+        --> (compile) --> '(1)/(2)' --> (evaluate) --> 0.5)
+
+        
+        Returns:
+
+            Returns self.pparsed, which is the list that 'primary_parse' has generated.
+
+        
+        
+        Written by Joshua Kent, last updated 29/05/2020.
+        github.com/joshua-kent/PyTkAppMng"""
+
+        original_text = text # this will not change, which lets us determine if the argument was None later on
+        if text == None:
+            text = self.latex_text
+
+        # check if the text starts and ends with $ (to confirm it is a LaTeX string)
+        if (text[0], text[-1]) != ("$", "$") and require_dollars:
+            raise typemathtextError("The input text must begin and end with a '$' symbol")
+
+        # isolate keywords into list
+        output = []
+        for char in text:
+            if char not in (" ", "$"):
+                output.append(char)
+        # with open(self._parse_info_dir, "r") as f:
+        #     doc_ = json.load(f)
+        #     specials = doc_["specials"]
+        #     specials_get = [item[0] for item in specials]
+        #     specials_set = [item[1] for item in specials]
+
+        #     keywords = doc_["keywords"]
+        #     keywords_get = [item[0] for item in keywords]
+        #     keywords_set = [item[1] for item in keywords]
+
+        #     pointouts = doc_["pointouts"]
+        #     pointouts_get = [item[0] for item in pointouts]
+        #     pointouts_set = [item[1] for item in pointouts]
+
+
+        # for i in range(len(specials)):
+        #     output = self.concatenate_chars(output, specials_get[i])
+        #     output = self.swap(output, specials_get[i], specials_set[i])
+        # for i in range(len(keywords)):
+        #     output = self.concatenate_chars(output, keywords_get[i])
+        # for i in range(len(pointouts)):
+        #     output = self.concatenate_chars(output, pointouts_get[i])
+        #     output = self.swap(output, pointouts_get[i], pointouts_set[i])
+
+        output = self.fixup(output)
         
         # connect consecutive numbers, multiply consecutive numbers & variables to create terms
         output = self.concatenate_ints(output)
 
-        self.pparsed = output
-        return self.pparsed
+        if original_text == None:
+            self.pparsed = output
+        return output
 
-    def compile(self):
+    def compile(self, text = None):
         """Fully converts the parsed text list into a sympy-readable format as a
         string to be executed.
 
@@ -235,7 +336,11 @@ class typemath:
         github.com/joshua-kent/PyTkAppMng
         """
 
-        output = self.pparsed.copy() # setting a variable to a list only creates a new reference, not id
+        if text == None:
+            output = self.pparsed.copy() # setting a variable to a list only creates a new reference, not id
+        else:
+            output = text
+        
         with open(self._parse_info_dir, "r") as f:
             doc_ = json.load(f)
             keywords = doc_["keywords"]
@@ -247,7 +352,7 @@ class typemath:
             specials_set =[item[1] for item in specials]
         
         for i in range(len(keywords)):
-            self.swap(output, keywords_get[i], keywords_set[i])
+            output = self.swap(output, keywords_get[i], keywords_set[i])
 
         # Creates tokens for each special value (that need more work to change)
         # In format:
@@ -298,11 +403,17 @@ class typemath:
                     output[corresponding_token_2_pos] = ")"
         
         output = "".join(output)
-
-        self.sparsed = output
+        if text == None:
+            self.sparsed = output
         return self.sparsed
 
 # ]--
+
+    def deparse(self):
+        pass
+    
+    def decompile(self):
+        pass
     
     def evaluate(self):
         """Evaluates the current math text and returns its value.
@@ -315,6 +426,3 @@ class typemath:
         self.parse()
         self.compile()
         return eval("".join(self.sparsed))
-
-if __name__ == "__main__":
-    txt = typemath(r"\frac{5}{2}")

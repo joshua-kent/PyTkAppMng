@@ -1,13 +1,13 @@
 from tkinter import *
 from tkinter.ttk import *
 from PIL import ImageTk, Image
-import packages.typemathtext as typemathtext
 import warnings
-try:
-    from .defs import *
-except:
-    from defs import *
 import os.path
+if __name__ == "__main__":
+    raise Exception("This module cannot be run directly. Please run from PyTkAppMng/main.py")
+else:
+    import packages.typemathtext as typemathtext
+    from .defs import *
 
 class init:
     current_string = ""
