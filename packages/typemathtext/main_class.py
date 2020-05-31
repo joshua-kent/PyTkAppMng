@@ -244,9 +244,13 @@ class typemath:
             to the end of the 'pparsed' attribute, and its 'pointer' attribute will increase by one. All other attributes
             will be automatically updated with it, which is why this method is useful.
 
+            Hence, this method results in:
+            my_integral.pparsed = ["\int", "4", "*", "x", "**", "2", "dx", "+", "4"]
+            my_integral.sparsed = "sy.integrate(4*typemath._x**2, typemath._x)+4"
+            my_integral.pointer = 9
         
         
-        Written by Joshua Kent, last updated 29/05/2020.
+        Written by Joshua Kent, last updated 31/05/2020.
         github.com/joshua-kent/PyTkAppMng"""
 
         # check value types
