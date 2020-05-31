@@ -7,7 +7,7 @@
     "keywords": [
         ["\\int", "sy.integrate("],
         ["\\ln", "log"],
-        ["dx", ", sy.symbols(\"x\")"],
+        ["dx", ", sy.symbols(\"x\"))"],
         ["DERIV", "sy.diff"],
         ["e", "math.e"],
         ["\\pi", "math.pi"],
