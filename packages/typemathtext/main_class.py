@@ -36,18 +36,13 @@ class typemath:
         compiled (str) -- a string containing the fully converted version of latex_input
                          into standard Python/sympy format
 
-                                This is only updated when secondary_parse() is called
-
-
-
-    Written by Joshua Kent, last updated 29/05/2020.
-    github.com/joshua-kent/PyTkAppMng"""
+                                This is only updated when secondary_parse() is called"""
     
     _current_dir = os.path.dirname(os.path.realpath(__file__))
     _parse_info_dir = os.path.join(_current_dir, "parse_info.json")
 
-    def __init__(self, latex_input): # edit this to support multiple initial formats
-        self.latex_input = latex_input
+    def __init__(self, latex): # edit this to support multiple initial formats
+        self.latex = latex
         self.parsed = []
         self.compiled = ""
         self.parse()
@@ -69,16 +64,11 @@ class typemath:
         
         Returns:
 
-            Returns self.parsed, which is the list that 'primary_parse' has generated.
-
-        
-        
-        Written by Joshua Kent, last updated 29/05/2020.
-        github.com/joshua-kent/PyTkAppMng"""
+            Returns self.parsed, which is the list that 'primary_parse' has generated."""
 
         original_text = text # this will not change, which lets us determine if the argument was None later on
         if text == None:
-            text = self.latex_input
+            text = self.latex
 
         # check if the text starts and ends with $ (to confirm it is a LaTeX string)
         if (text[0], text[-1]) != ("$", "$") and require_dollars:
@@ -114,13 +104,7 @@ class typemath:
 
         Returns:
 
-            This returns the new string and also puts it in the attribute 'compiled'.
-
-
-
-        Written by Joshua Kent, last updated 30/05/2020.
-        github.com/joshua-kent/PyTkAppMng
-        """
+            This returns the new string and also puts it in the attribute 'compiled'."""
 
         # if text is not set, automatically compile attribute 'parsed' instead
         if text is None:
@@ -260,11 +244,7 @@ class typemath:
             Hence, this method results in:
             my_integral.parsed = ["\int", "4", "*", "x", "**", "2", "dx", "+", "4"]
             my_integral.compiled = "sympy.integrate(4*sympy.symbols("x")**2, sympy.symbols("x"))+4"
-            my_integral.pointer = 9
-        
-        
-        Written by Joshua Kent, last updated 01/06/2020.
-        github.com/joshua-kent/PyTkAppMng"""
+            my_integral.pointer = 9"""
 
         # check value types
         if latex_input is not None:
@@ -324,7 +304,7 @@ class typemath:
             self.parsed = parsed_input
             self.refresh(self.parsed)
 
-        return parsed_input
+        return parsed_insert
 
     def deparse(self):
         pass
@@ -343,8 +323,27 @@ class typemath:
                 self.evaluate = eval(self.compiled)
             except: # self.compiled may not have correct syntax and return an error
                 self.evaluate = None
-        
-    def __str__(self):
+    
+    # dunders
+
+    def __add__(self, other):
+        """returns a new instance of typemath, to reassign, use += or edit()"""
+
+        if type(other) is str: # when added to a string (presumed LaTeX string)
+            temp_typemath_object = typemath(self.latex)
+            temp_typemath_object.edit(latex_insert = f"+{other}")
+            return temp_typemath_object
+        if type(other) is typemath: # when added to another typemath object
+            temp_typemath_object = typemath(self.latex)
+            temp_typemath_object.edit(latex_insert = "$+$")
+            temp_typemath_object.edit(latex_insert = f"{other.latex}")
+            return temp_typemath_object
+
+
+    def __pe__(self, other):
+        self = self + other
+
+    def __repr__(self):
         return self.compiled
 
     def __concatenate_chars(self, chars, string):

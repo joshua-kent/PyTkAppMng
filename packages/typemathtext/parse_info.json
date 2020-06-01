@@ -1,14 +1,14 @@
 {
     "specials": [
-        ["\\frac{d}{dx}", "DERIV"],
+        ["\\frac{d}{dx}", "D/DX"],
         ["\\frac{", "FRAC{"]
     ],
 
     "keywords": [
+        ["D/DX", "sympy.diff"],
         ["\\int", "sympy.integrate("],
         ["\\ln", "log"],
-        ["dx", ", sympy.symbols(\"x\"))"],
-        ["DERIV", "sympy.diff"],
+        ["dx", ",sympy.symbols(\"x\"))"],
         ["e", "math.e"],
         ["\\pi", "math.pi"],
         ["x", "sympy.symbols(\"x\")"],
