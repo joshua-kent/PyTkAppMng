@@ -37,7 +37,7 @@ sudo nano ~/.bashrc
 ```
 Then, add to the end of the file
 ```bash
-export WINDOW:0;
+export DISPLAY:0;
 ```
 Then save and exit (shift+X to exit, Y to confirm save, enter to save to the same filename)
 
