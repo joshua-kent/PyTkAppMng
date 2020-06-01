@@ -23,3 +23,36 @@ However, most/all versions above Python 3.0 should work.
 [Matplotlib](https://matplotlib.org/3.1.1/users/installing.html)
 
 [Sympy](https://docs.sympy.org/latest/install.html)
+
+### Additional requirements for Linux
+
+If tkinter is not installed, run in the terminal
+```bash
+sudo apt-get install python3-pip
+```
+
+If you are running Ubuntu in WSL (Windows Subsystem for Linux), run
+```bash
+sudo nano ~/.bashrc
+```
+Then, add to the end of the file
+```bash
+export WINDOW:0;
+```
+Then save and exit (shift+X to exit, Y to confirm save, enter to save to the same filename)
+
+## How to run
+
+### Windows 10
+
+In the installed file
+```bash
+python main.py
+```
+
+### Linux
+
+In the installed file
+```bash
+python3 main.py
+```
