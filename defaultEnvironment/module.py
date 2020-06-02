@@ -64,9 +64,8 @@ class init:
         # gets info from info.json in modules, and appends it to (included/added)_apps_info
         self.get_json_info()
 
-        # if things already exist in the window (i.e. after another app was previously open), delete them
-        for item in self.root.winfo_children():
-            item.destroy()
+        # clears all widgets other than menu
+        self.clear_widgets()
 
         # ttk style
         self.style = Style()
@@ -183,36 +182,32 @@ class init:
         # creates a menu for the window
 
         # creates menu object
-        self.menu = Menu(self.root)
-        self.root.config(menu = self.menu)
+        # if the menu does not already exist
+        if not "<tkinter.Menu object .!menu>" in repr(self.root.winfo_children()):
+            self.menu = Menu(self.root)
+            self.root.config(menu = self.menu)
 
-        # creates file menu
-        file = Menu(self.menu, tearoff = 0)
-        file.add_command(label = "Import")
-        file.add_command(label = "Return to selection screen", command = partial(init, self.root))
-        file.insert_separator(2)
-        file.add_command(label = "Exit", command = exit)
-        self.menu.add_cascade(label = "File", menu = file)
+            # creates file menu
+            file = Menu(self.menu, tearoff = 0)
+            file.add_command(label = "Import")
+            file.add_command(label = "Return to selection screen", command = partial(init, self.root))
+            file.insert_separator(2)
+            file.add_command(label = "Exit", command = exit)
+            self.menu.add_cascade(label = "File", menu = file)
 
-        # creates settings menu
-        settings = Menu(self.menu, tearoff = 0)
-        settings.add_command(label = "Change background colour", command = self.recolour_background)
-        settings.add_command(label = "Save current colour as default",
-                                command = lambda: self.set_setting(self.user_settings, "background", self.root.cget("background")))
-        settings.insert_separator(2)
-        settings.add_command(label = "Reset all to default", command = self.reset_all_user_defaults)
-        self.menu.add_cascade(label = "Settings", menu = settings)
+            # creates settings menu
+            settings = Menu(self.menu, tearoff = 0)
+            settings.add_command(label = "Change background colour", command = self.recolour_background)
+            settings.add_command(label = "Save current colour as default",
+                                    command = lambda: self.set_setting(self.user_settings, "background", self.root.cget("background")))
+            settings.insert_separator(2)
+            settings.add_command(label = "Reset all to default", command = self.reset_all_user_defaults)
+            self.menu.add_cascade(label = "Settings", menu = settings)
 
     def run_module(self, module, root, frame):
         # runs a module in /applications
 
-        # clear current window (other than its menu)
-        for i in self.root.winfo_children():
-            if i.winfo_children():
-                if repr(i) != "<tkinter.Menu object .!menu>":
-                    for k in i.winfo_children():
-                        k.destroy()
-        self.root.deiconify()
+        self.clear_widgets()
 
         # set location to whichever folder it's in
         # (this could return an error, but shouldn't as this method is only used internally)
@@ -257,6 +252,17 @@ class init:
                 "Its default arguments may be incorrect".format(module, args_string))
         
         ## ]]
+    
+    def clear_widgets(self):
+        # clears current window (other than its menu)
+
+        for i in self.root.winfo_children():
+            if repr(i) != "<tkinter.Menu object .!menu>":
+                if i.winfo_children():
+                    for k in i.winfo_children():
+                        k.destroy()
+                i.destroy()
+        self.root.deiconify()
 
     @staticmethod
     def set_setting(file, setting, value = None):
