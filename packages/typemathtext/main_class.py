@@ -327,7 +327,25 @@ class typemath:
     # dunders
 
     def __add__(self, other):
-        """returns a new instance of typemath, to reassign, use += or edit()"""
+        r"""returns a new instance of typemath that adds the value of one typemath
+        object and either another typemath object or a LaTeX string (shown with
+        wrapping dollar signs)
+        
+        If you are looking to reassign a function when adding, use += or edit()
+        
+        
+        Example:
+            expr_1 = typemath(r"$\int 4x dx$")
+            expr_2 = typemath(r"\frac{82}{2}")
+            
+            Input:
+                expr_1 + expr_2
+
+            Returns:
+                r"$\int 4x dx + \frac{82}{2}$"
+            
+            However, this is not a string, but the represented (__repr__) version
+            of a new typemath() object, returning its 'latex' attribute."""
 
         if type(other) is str: # when added to a string (presumed LaTeX string)
             temp_typemath_object = typemath(self.latex)
@@ -341,9 +359,15 @@ class typemath:
 
 
     def __pe__(self, other):
+        """Does the same as __add__, but stores the new object into the
+        first typemath() object, rather than creating a new object
+        
+        See the __add__() method's help page for how this will behave."""
+
         self = self + other
 
     def __repr__(self):
+        """Returns the 'compiled' attribute of the typemath object."""
         return self.compiled
 
     def __concatenate_chars(self, chars, string):

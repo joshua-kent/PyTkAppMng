@@ -12,4 +12,5 @@ if sys.version_info.major == 3:
     env = defEnv.init(root)
     root.mainloop()
 else:
-    raise Exception("Your Python version is out of date. Please update to a newer release (recommended: 3.8)")
+    raise Exception("Your Python version is out of date. Please update to a newer release"
+                    "(recommended: 3.8)")
