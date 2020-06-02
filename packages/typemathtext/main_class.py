@@ -320,6 +320,7 @@ class typemath:
             i += 1
 
         self.pointer = pointer_pos
+
         self.refresh(self.parsed)
 
         return self.parsed
@@ -403,9 +404,10 @@ class typemath:
             if place_check == string:
                 output[i] = string
                 q = len(string) - 1
-                while q > 0:
-                    output.pop(i + 1)
-                    q -= 1
+                if len(string) > 2:
+                    while q > 0:
+                        output.pop(i + 1)
+                        q -= 1
         return output
     
     @staticmethod
