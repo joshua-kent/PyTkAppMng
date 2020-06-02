@@ -1,4 +1,4 @@
-# To test, run in the terminal 'ipython -i main_class.py'
+# To test, run in the terminal 'ipython -i typemath.py'
 
 import warnings
 import math
@@ -19,8 +19,8 @@ class typemath:
 
     Parameters:
     
-        latex_input (str) -- a string written with LaTeX format.
-                            (e.g. "\int 4x^2 dx")
+        latex (str) -- a string written with LaTeX format.
+                       (e.g. "\int 4x^2 dx")
     
 
     Attributes:
@@ -181,7 +181,7 @@ class typemath:
 
     def edit(self, latex_input = None, parsed_input = None,
             latex_insert = None, parsed_insert = None, abs_pointer = None):
-        """Edits latex text by parsing, editing, repositioning the pointer, recompiling.
+        """Edits LaTeX text by parsing, editing, repositioning the pointer, recompiling.
 
 
         Parameters:
@@ -266,13 +266,17 @@ class typemath:
 
         # equal value warnings
         if latex_input is not None and parsed_input is not None:
-            warnings.warn("typemathtext: 'latex_input' and 'parsed_input' are both set. Automatically using 'parsed_input'.")
+            warnings.warn("typemathtext: 'latex_input' and 'parsed_input' are both set."
+                          "Automatically using 'parsed_input'.")
             latex_input = None
         if latex_insert is not None and parsed_insert is not None:
-            warnings.warn("typemathtext: 'latex_insert' and 'parsed_insert' are both set. Automatically using 'parsed_insert'.")
+            warnings.warn("typemathtext: 'latex_insert' and 'parsed_insert' are both set. "
+                          "Automatically using 'parsed_insert'.")
             latex_insert = None
         if latex_insert is None and parsed_insert is None:
-            raise typemathtextError("Something must be inserted to edit. If you wish to move the pointer, use the 'set_pointer' method.")
+            raise typemathtextError("Something must be inserted to edit. "
+                                    "If you wish to move the pointer, "
+                                    "use the 'set_pointer' method.")
 
         # set values
         reference_self = False
@@ -307,7 +311,44 @@ class typemath:
 
         return parsed_insert
 
-    def remove(self, removals, pointer_pos = None): # rename removals
+    def remove(self, removals = 1, pointer_pos = None): # rename removals
+        """Removes a specified amount of items in the 'parsed' attribute.
+
+        This mimics the behaviour of a calculator, as it should remove one mathematical
+        expression at a time rather than individual characters.
+
+
+        Parameters:
+
+            removals (int/None) -- the amount of items to be removed (default: None)
+
+            pointer_pos (int/None) -- sets the position of the pointer (default: None)
+                                
+                                 If None, then the object instance's 'pointer' attribute
+                                 will be used instead.
+                                 See the typemath object's help page for more information
+                                 on the pointer.
+
+        
+        Returns:
+
+            This method returns the new 'latex' attribute of the instance that was edited. That
+            instance will be updated in accordance with the new changes.
+
+
+        Example:
+
+            expr = typemath(r"$\int 4x dx + 5$")
+            expr.remove(2)
+
+            Output:
+                "$\int 4x dx$"
+
+            By default, the pointer position is at the end of the string, this deletes two mathematical
+            objects from it, in this case '5' and '+'. It should be noted that what is returned is a
+            typemath object, not a string, but the output is simply its represented version (its 'latex'
+            attribute).
+        """
 
         # pointer_pos defaults sets it automatically
         if pointer_pos == None:
@@ -366,28 +407,58 @@ class typemath:
             However, this is not a string, but the represented (__repr__) version
             of a new typemath() object, returning its 'latex' attribute."""
 
-        if type(other) is str: # when added to a string (presumed LaTeX string)
-            temp_typemath_object = typemath(self.latex)
+        temp_typemath_object = typemath(self.latex)
+        if type(other) in (str, int, float): # when added to a string (presumed LaTeX string) or integer
             temp_typemath_object.edit(latex_insert = f"+{other}")
-            return temp_typemath_object
-        if type(other) is typemath: # when added to another typemath object
-            temp_typemath_object = typemath(self.latex)
+        elif type(other) is typemath: # when added to another typemath object
             temp_typemath_object.edit(latex_insert = "$+$")
             temp_typemath_object.edit(latex_insert = f"{other.latex}")
-            return temp_typemath_object
+        else:
+            raise TypeError(f"'{type(other)}' is not a valid type for this expression.'")
 
+        return temp_typemath_object
 
-    def __pe__(self, other):
+    def __iadd__(self, other):
         """Does the same as __add__, but stores the new object into the
         first typemath() object, rather than creating a new object
         
         See the __add__() method's help page for how this will behave."""
 
         self = self + other
+    
+    def __sub__(self, other):
+        """Does the same as __add__, but subtracts rather than adds
+        
+        See __add__ for more information, as all its specifics still apply."""
+
+        temp_typemath_object = typemath(self.latex)
+        if type(other) is str:
+            temp_typemath_object.edit(latex_insert = f"-({other})")
+        elif type(other) in (int, float):
+            temp_typemath_object.edit(latex_insert = f"-{other}")
+        elif type(other) is typemath:
+            temp_typemath_object.edit(latex_insert = "$-($")
+            temp_typemath_object.edit(latex_insert = f"{other.latex}")
+            temp_typemath_object.edit(latex_insert = "$)$")
+        else:
+            raise TypeError(f"'{type(other)}' is not a valid type for this expression.'")
+
+        return temp_typemath_object
+    
+    def __isub__(self, other):
+        """Does the same as __sub__, but stores the new object into the
+        first typemath() object, rather than creating a new object
+        
+        See the __add__() method's help page for how this will behave."""
+
+        self = self - other
+        return self
 
     def __repr__(self):
         """Returns the 'compiled' attribute of the typemath object."""
         return self.compiled
+
+    # internal functions
 
     def __concatenate_chars(self, chars, string):
         # concatenates consecutive items in a string if they match some string
@@ -416,7 +487,6 @@ class typemath:
         # e.g. __concatenate_ints(["5", "4", "x"]) returns ["54", "*", "x"]
 
         output = []
-        numbers = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
         tuple_list = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'x', 'y', "math.e", "math.pi")
         for i in range(len(lst)):
             try:
