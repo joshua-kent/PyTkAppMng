@@ -13,7 +13,7 @@ from tkinter.ttk import *
 from PIL import Image, ImageTk
 from functools import partial
 
-__version__ = "0.2.6b6"
+__version__ = "0.2.6b7"
 
 class init:
     current_dir = os.path.dirname(os.path.realpath(__file__))
