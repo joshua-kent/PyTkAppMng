@@ -179,7 +179,8 @@ class typemath:
             self.compiled = output
         return self.compiled
 
-    def edit(self, latex_input = None, parsed_input = None, latex_insert = None, parsed_insert = None, abs_pointer = None):
+    def edit(self, latex_input = None, parsed_input = None,
+            latex_insert = None, parsed_insert = None, abs_pointer = None):
         """Edits latex text by parsing, editing, repositioning the pointer, recompiling.
 
 
@@ -305,6 +306,23 @@ class typemath:
             self.refresh(self.parsed)
 
         return parsed_insert
+
+    def remove(self, removals, pointer_pos = None): # rename removals
+
+        # pointer_pos defaults sets it automatically
+        if pointer_pos == None:
+            pointer_pos = self.pointer
+
+        i = 1
+        while i <= removals:
+            self.parsed.pop(pointer_pos - 1)
+            pointer_pos -= 1
+            i += 1
+
+        self.pointer = pointer_pos
+        self.refresh(self.parsed)
+
+        return self.parsed
 
     def deparse(self):
         pass
