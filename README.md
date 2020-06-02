@@ -28,18 +28,9 @@ However, most/all versions above Python 3.0 should work.
 
 If tkinter is not installed, run in the terminal
 ```bash
-sudo apt-get install python3-pip
+sudo apt update
+sudo apt install python3-pip
 ```
-
-If you are running Ubuntu in WSL (Windows Subsystem for Linux), run
-```bash
-sudo nano ~/.bashrc
-```
-Then, add to the end of the file
-```bash
-export DISPLAY:0;
-```
-Then save and exit (shift+X to exit, Y to confirm save, enter to save to the same filename)
 
 ## How to run
 
