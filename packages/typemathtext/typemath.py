@@ -41,12 +41,19 @@ class typemath:
     _current_dir = os.path.dirname(os.path.realpath(__file__))
     _parse_info_dir = os.path.join(_current_dir, "parse_info.json")
 
-    def __init__(self, latex): # edit this to support multiple initial formats
-        self.latex = latex
-        self.parsed = []
-        self.compiled = ""
-        self.parse()
-        self.compile()
+    def __init__(self, latex = None, parsed = None, compiled = None): # edit this to support multiple initial formats
+        if latex is not None:
+            self.latex = latex
+            self.parsed = self.parse()
+            self.compiled = self.compile()
+        elif parsed is not None:
+            self.parsed = parsed
+            self.latex = self.deparse(self.parsed)
+            self.compiled = self.compile(self.parsed)
+        elif compiled is not None:
+            self.compiled = compiled
+            self.parsed = self.decompile(self.compiled)
+            self.latex = self.deparse(self.parsed)
         try:
             self.evaluate = eval(self.compile())
         except: # the compiled form may currently be incomplete and return an error
@@ -91,6 +98,38 @@ class typemath:
             self.parsed = output
 
         return output
+
+    def deparse(self, lst = None):
+        """Converts a parsed list into into a LaTeX string.
+        
+        
+        Parameters:
+        
+            lst (list/None) -- a parsed list (see more info in typemath.parsed
+                               help page)
+            
+        
+        Returns:
+        
+            A converted version of the parsed list in LaTeX format.
+            This can make some notation differences, as multiplication
+            signs between numbers and variables that were added during
+            parsing are still present in the string.
+        """
+        
+        if lst is None:
+            edited_parsed = self.parsed.copy()
+        else:
+            edited_parsed = lst.copy()
+        
+        edited_parsed = self.__reverse_fixup(edited_parsed)
+        edited_parsed.insert(0, "$")
+        edited_parsed.insert(-1, "$")
+        edited_parsed = "".join(edited_parsed)
+        
+        if lst is None:
+            self.latex = edited_parsed
+        return edited_parsed
 
     def compile(self, text = None):
         """Fully converts the parsed text list into a sympy-readable format as a
@@ -179,6 +218,9 @@ class typemath:
             self.compiled = output
         return self.compiled
 
+    def decompile(self, compiled_string): # need to do
+        return "None"
+    
     def edit(self, latex_input = None, parsed_input = None,
             latex_insert = None, parsed_insert = None, abs_pointer = None):
         r"""Edits LaTeX text by parsing, editing, repositioning the pointer, recompiling.
@@ -366,12 +408,6 @@ class typemath:
 
         return self.parsed
 
-    def deparse(self):
-        pass
-    
-    def decompile(self):
-        pass
-
     def refresh(self, origin):
         # adjust other values (for when one changes, so attributes are not desynced)
 
@@ -517,6 +553,8 @@ class typemath:
     def __fixup(self, lst):
         # internal function to join together special values as defined in parse_info.json
         # this does most of the parsing
+        
+        lst = lst.copy()
 
         with open(self._parse_info_dir, "r") as f:
             doc_ = json.load(f)
@@ -539,5 +577,29 @@ class typemath:
         for i in range(len(pointouts)):
             lst = self.__concatenate_chars(lst, pointouts_get[i])
             lst = self.__swap(lst, pointouts_get[i], pointouts_set[i])
+        
+        return lst
+
+    def __reverse_fixup(self, lst):
+        # Reverses the __fixup function's swap function
+        # There is no need to reverse __concatenate_chars as it will be
+        # turned into a string anyway in deparse()
+        
+        lst = lst.copy()
+        
+        with open(self._parse_info_dir, "r") as f:
+            doc_ = json.load(f)
+            specials = doc_["specials"]
+            specials_get = [item[0] for item in specials]
+            specials_set = [item[1] for item in specials]
+
+            pointouts = doc_["pointouts"]
+            pointouts_get = [item[0] for item in pointouts]
+            pointouts_set = [item[1] for item in pointouts]
+        
+        for i in range(len(specials)):
+            lst = self.__swap(lst, specials_set[i], specials_get[i])
+        for i in range(len(pointouts)):
+            lst = self.__swap(lst, pointouts_set[i], pointouts_get[i])
         
         return lst
