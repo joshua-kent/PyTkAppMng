@@ -12,7 +12,14 @@ full extent).
 
 ## Installation info
 
-Recommended version: Python 3.8.2
+### [Install Python](https://www.python.org/downloads/)
+
+As long as this is updated, it should be compatible with
+the current Python version, as it is developed with the
+current version (as of writing this, 3.8.3), and is tested
+with beta/release-candiate versions of Python (currently
+3.9).
+
 
 However, most/all versions above Python 3.0 should work.
 
