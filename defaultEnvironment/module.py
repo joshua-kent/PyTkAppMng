@@ -7,9 +7,9 @@ import os.path
 import sys
 import json
 import inspect
-from tkinter import *
+import tkinter as tk
+from tkinter import ttk
 from tkinter import colorchooser
-from tkinter.ttk import *
 from PIL import Image, ImageTk
 from functools import partial
 
@@ -42,8 +42,8 @@ class init:
         self.root.geometry("800x600+20+20")
         self.root.resizable(True, True)
         self.root.deiconify()
-        Grid.rowconfigure(self.root, 0, weight = 0)
-        Grid.columnconfigure(self.root, 0, weight = 0)
+        tk.Grid.rowconfigure(self.root, 0, weight = 0)
+        tk.Grid.columnconfigure(self.root, 0, weight = 0)
         
         # gets the directories of modules in 'included' and 'added'
         for files_ in os.walk(self.included):
@@ -68,7 +68,7 @@ class init:
         self.clear_widgets()
 
         # ttk style
-        self.style = Style()
+        self.style = ttk.Style()
         self.style.configure("frame.TFrame", theme = "winnative")
         self.style.configure("defEnv.TButton", theme = "winnative", relief = "flat")
 
@@ -79,11 +79,11 @@ class init:
         self.create_menu()
 
         # creates frame
-        self.frame = Frame(self.root, style = "frame.TFrame")
+        self.frame = ttk.Frame(self.root, style = "frame.TFrame")
         self.frame.grid_forget()
 
-        separator = Separator(self.frame, orient = VERTICAL)
-        separator.grid(row = 0, column = 4, rowspan = 32, sticky = N+S+W)
+        separator = ttk.Separator(self.frame, orient = tk.VERTICAL)
+        separator.grid(row = 0, column = 4, rowspan = 32, sticky = "nsw")
 
         for i in range(32):
             self.frame.grid_columnconfigure(i, minsize = 60)
@@ -112,7 +112,7 @@ class init:
 
             # creates icon (but not if it's hidden)
             if not hidden:
-                if icon != None:
+                if icon is not None:
                     icon = Image.open(icon)
                     if icon_antialiasing:
                         icon = icon.resize((66, 66), Image.ANTIALIAS)
@@ -120,19 +120,19 @@ class init:
                         icon = icon.resize((66, 66))
 
                 # add buttons
-                btn = Button(self.frame, style = "defEnv.TButton")
+                btn = ttk.Button(self.frame, style = "defEnv.TButton")
                 if icon == "None":
-                    btn.img = PhotoImage() 
+                    btn.img = tk.PhotoImage() 
                 else:
                     btn.img = ImageTk.PhotoImage(icon)
-                btn.config(image = btn.img, compound = CENTER,
+                btn.config(image = btn.img, compound = tk.CENTER,
                 command = partial(self.run_module, key, self.root, self.frame))
-                btn.grid(padx = 2, column = x, row = y, sticky = N+S+W+E)
+                btn.grid(padx = 2, column = x, row = y, sticky = "nswe")
 
                 # add label below
-                lbl = Label(self.frame, text = title)
-                lbl.config(anchor = CENTER)
-                lbl.grid(column = x, row = y + 1, padx = 2, sticky = N+S+W+E)
+                lbl = ttk.Label(self.frame, text = title)
+                lbl.config(anchor = tk.CENTER)
+                lbl.grid(column = x, row = y + 1, padx = 2, sticky = "nswe")
 
                 # makes sure they are in the right order
                 x = (x + 1) % 4
@@ -184,11 +184,11 @@ class init:
         # creates menu object
         # if the menu does not already exist
         if not "<tkinter.Menu object .!menu>" in repr(self.root.winfo_children()):
-            self.menu = Menu(self.root)
+            self.menu = tk.Menu(self.root)
             self.root.config(menu = self.menu)
 
             # creates file menu
-            file = Menu(self.menu, tearoff = 0)
+            file = tk.Menu(self.menu, tearoff = 0)
             file.add_command(label = "Import")
             file.add_command(label = "Return to selection screen", command = partial(init, self.root))
             file.insert_separator(2)
@@ -196,7 +196,7 @@ class init:
             self.menu.add_cascade(label = "File", menu = file)
 
             # creates settings menu
-            settings = Menu(self.menu, tearoff = 0)
+            settings = tk.Menu(self.menu, tearoff = 0)
             settings.add_command(label = "Change background colour", command = self.recolour_background)
             settings.add_command(label = "Save current colour as default",
                                     command = lambda: self.set_setting(self.user_settings, "background", self.root.cget("background")))
@@ -299,7 +299,7 @@ class init:
     def setup_user_defaults(self):
         # sets up 'root' (Tk obj) and 'style' (Tkk style obj) to match user_defaults.json
 
-        if self.get_setting(self.user_settings, "background") == None:
+        if self.get_setting(self.user_settings, "background") is None:
             self.set_setting(self.user_settings, "background", "SystemButtonFace")
         self.root.config(background = self.get_setting(self.__class__.user_settings, "background"))
         self.style.configure("TButton", background = self.__class__.get_setting(self.__class__.user_settings, "background"))

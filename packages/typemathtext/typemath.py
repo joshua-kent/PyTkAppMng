@@ -10,7 +10,7 @@ class typemathtextError(Exception):
     pass
 
 class typemath:
-    """Creates an object that can be used for easy-to-use methods to create calculators.
+    r"""Creates an object that can be used for easy-to-use methods to create calculators.
     
     It does this by creating methods to convert between Python (sympy) and LaTeX.
     Furthermore, it creates a pointer that can be used to insert new text (in the
@@ -181,7 +181,7 @@ class typemath:
 
     def edit(self, latex_input = None, parsed_input = None,
             latex_insert = None, parsed_insert = None, abs_pointer = None):
-        """Edits LaTeX text by parsing, editing, repositioning the pointer, recompiling.
+        r"""Edits LaTeX text by parsing, editing, repositioning the pointer, recompiling.
 
 
         Parameters:
@@ -312,7 +312,7 @@ class typemath:
         return parsed_insert
 
     def remove(self, removals = 1, pointer_pos = None): # rename removals
-        """Removes a specified amount of items in the 'parsed' attribute.
+        r"""Removes a specified amount of items in the 'parsed' attribute.
 
         This mimics the behaviour of a calculator, as it should remove one mathematical
         expression at a time rather than individual characters.
@@ -526,7 +526,6 @@ class typemath:
 
             keywords = doc_["keywords"]
             keywords_get = [item[0] for item in keywords]
-            keywords_set = [item[1] for item in keywords]
 
             pointouts = doc_["pointouts"]
             pointouts_get = [item[0] for item in pointouts]
