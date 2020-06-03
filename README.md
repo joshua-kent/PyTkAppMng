@@ -33,10 +33,10 @@ However, most/all versions above Python 3.0 should work.
 
 ### Additional requirements for Linux
 
-If tkinter is not installed, run in the terminal
+If tkinter is not installed
 ```bash
 sudo apt update
-sudo apt install python3-pip
+sudo apt install python3-tk
 ```
 
 ## How to run
