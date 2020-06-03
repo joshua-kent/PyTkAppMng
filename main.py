@@ -1,6 +1,6 @@
-import defaultEnvironment as defEnv
-from tkinter import Tk, Menu, ttk
 import sys
+from tkinter import Tk
+import defaultEnvironment as defEnv
 
 if sys.version_info.major == 3:
     # Set up root window
