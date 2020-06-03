@@ -114,8 +114,7 @@ class typemath:
             A converted version of the parsed list in LaTeX format.
             This can make some notation differences, as multiplication
             signs between numbers and variables that were added during
-            parsing are still present in the string.
-        """
+            parsing are still present in the string."""
         
         if lst is None:
             edited_parsed = self.parsed.copy()
