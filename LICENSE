@@ -28,18 +28,19 @@ a new copyright notice and license begins. In the case where the copyright
 notice of a software is not clearly shown at the beginning of a license, it will
 be included above the license, and the heading "COPYRIGHT" will be displayed
 above of the copyright disclaimer, and the heading "LICENSE" displayed above of
-the software of the dependency's license. The content of each license has not
-been altered. In the case where a dependency itself has dependencies, which also
-may have dependencies, etc., then ALL these licenses should also be included,
-and are separated in the same manner as direct dependencies' licenses. If
-multiple different dependencies use the same software with the identical
-licenses, it is only referenced once in this document. Sometimes, dependencies
-do not provide a written license agreement, but name the license it is
-distributed under. In this case, a small notice is written: where to find the
-license agreement, its name and copyright, and a template for its license
-provided beneath. This notice and the license template will have a sequence of
-asterisks (*) above it, rather than the usual sequence of equals signs explained
-above.
+the dependency's license. In the case where a dependency itself has
+dependencies, which also may have dependencies, etc., then ALL these licenses,
+if required, should also be included, and are separated in the same manner as
+direct dependencies' licenses. If multiple different dependencies use the same
+software with the identical licenses, it is only referenced once in this
+document. Sometimes, dependencies do not provide a written license agreement,
+but name the license it is distributed under. In this case, a small notice is
+written: where to find the license agreement, its name and copyright, and a
+template for its license provided beneath. This notice and the license template
+will have a sequence of asterisks (*) above it, rather than the usual sequence of
+equals signs explained above. If any dependency does not require any license nor
+copyright by the terms of its license, or is in public domain, it may not be
+included in this document.
 
 ================================================================================
 
