@@ -55,15 +55,8 @@ In the installed file
 python3 main.py
 ```
 
-## Dependency licenses
+## License
 
-```
-The Python Imaging Library (PIL) is
+This software is distributed under the MIT license.
 
-    Copyright © 1997-2011 by Secret Labs AB
-    Copyright © 1995-2011 by Fredrik Lundh
-
-Pillow is the friendly PIL fork. It is
-
-    Copyright © 2010-2020 by Alex Clark and contributors
-```
+See the full license agreement in the [LICENSE](https://github.com/joshua-kent/PyTkAppMng/blob/master/LICENSE) file.
