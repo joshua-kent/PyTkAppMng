@@ -57,6 +57,6 @@ python3 main.py
 
 ## License
 
-This software is distributed under the MIT license.
+This software is distributed under the [MIT license](https://opensource.org/licenses/MIT).
 
-See the full license agreement in the [LICENSE](https://github.com/joshua-kent/PyTkAppMng/blob/master/LICENSE) file.
+See the full license in the [LICENSE](https://github.com/joshua-kent/PyTkAppMng/blob/master/LICENSE) file.
