@@ -1,4 +1,10 @@
 __pycache__/
-.vscode/
 user_settings.json
 dev/
+
+# vscode junk
+.vscode/
+
+# vim junk
+*.swp
+*~
